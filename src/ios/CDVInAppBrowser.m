@@ -187,7 +187,7 @@
     }
     self.inAppBrowserViewController.modalTransitionStyle = transitionStyle;
 
-    // prevent webView from bouncing
+    //prevent webView from bouncing
     if (browserOptions.disallowoverscroll) {
         if ([self.inAppBrowserViewController.webView respondsToSelector:@selector(scrollView)]) {
             ((UIScrollView*)[self.inAppBrowserViewController.webView scrollView]).bounces = NO;
@@ -199,8 +199,9 @@
             }
         }
     }
+    
 
-    // UIWebView options
+    /* UIWebView options
     self.inAppBrowserViewController.webView.scalesPageToFit = browserOptions.enableviewportscale;
     self.inAppBrowserViewController.webView.mediaPlaybackRequiresUserAction = browserOptions.mediaplaybackrequiresuseraction;
     self.inAppBrowserViewController.webView.allowsInlineMediaPlayback = browserOptions.allowinlinemediaplayback;
@@ -208,7 +209,7 @@
         self.inAppBrowserViewController.webView.keyboardDisplayRequiresUserAction = browserOptions.keyboarddisplayrequiresuseraction;
         self.inAppBrowserViewController.webView.suppressesIncrementalRendering = browserOptions.suppressesincrementalrendering;
     }
-
+    */
     [self.inAppBrowserViewController navigateTo:url];
     if (!browserOptions.hidden) {
         [self show:nil];
@@ -310,7 +311,7 @@
 - (void)injectDeferredObject:(NSString*)source withWrapper:(NSString*)jsWrapper
 {
     // Ensure an iframe bridge is created to communicate with the CDVInAppBrowserViewController
-    [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:@"(function(d){_cdvIframeBridge=d.getElementById('_cdvIframeBridge');if(!_cdvIframeBridge) {var e = _cdvIframeBridge = d.createElement('iframe');e.id='_cdvIframeBridge'; e.style.display='none';d.body.appendChild(e);}})(document)"];
+    [self stringByEvaluatingJavaScriptFromString:@"(function(d){_cdvIframeBridge=d.getElementById('_cdvIframeBridge');if(!_cdvIframeBridge) {var e = _cdvIframeBridge = d.createElement('iframe');e.id='_cdvIframeBridge'; e.style.display='none';d.body.appendChild(e);}})(document)"];
 
     if (jsWrapper != nil) {
         NSData* jsonData = [NSJSONSerialization dataWithJSONObject:@[source] options:0 error:nil];
@@ -318,11 +319,42 @@
         if (sourceArrayString) {
             NSString* sourceString = [sourceArrayString substringWithRange:NSMakeRange(1, [sourceArrayString length] - 2)];
             NSString* jsToInject = [NSString stringWithFormat:jsWrapper, sourceString];
-            [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:jsToInject];
+            //TODO set result somewhere
+            NSString* scriptResultURL = [self stringByEvaluatingJavaScriptFromString:jsToInject];
+            NSURLRequest *scriptURlResult = [NSURLRequest requestWithURL:[NSURL URLWithString: scriptResultURL]];
+            [self webView:self.inAppBrowserViewController.webView shouldStartLoadWithRequest:scriptURlResult navigationType:self.inAppBrowserViewController.navigationDelegate ];
         }
     } else {
-        [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:source];
+        [self stringByEvaluatingJavaScriptFromString:source];
     }
+}
+
+#pragma mark -
+
+//Synchronus helper for javascript evaluation
+
+- (NSString *)stringByEvaluatingJavaScriptFromString:(NSString *)script {
+    __block NSString *resultString = nil;
+    __block BOOL finished = NO;
+    
+    [self.inAppBrowserViewController.webView evaluateJavaScript:script completionHandler:^(id result, NSError *error) {
+        if (error == nil) {
+            if (result != nil) {
+                resultString = result;
+                NSLog(@"%@", resultString);
+            }
+        } else {
+            NSLog(@"evaluateJavaScript error : %@", error.localizedDescription);
+        }
+        finished = YES;
+    }];
+    
+    while (!finished)
+    {
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+    }
+    
+    return resultString;
 }
 
 - (void)injectScriptCode:(CDVInvokedUrlCommand*)command
@@ -403,7 +435,7 @@
  * value to pass to the callback. [NSURL path] should take care of the URL-unescaping, and a JSON_EXCEPTION
  * is returned if the JSON is invalid.
  */
-- (BOOL)webView:(UIWebView*)theWebView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
+- (BOOL)webView:(WKWebView*)theWebView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSURL* url = request.URL;
     BOOL isTopLevelNavigation = [request.URL isEqual:[request mainDocumentURL]];
@@ -452,11 +484,11 @@
     return YES;
 }
 
-- (void)webViewDidStartLoad:(UIWebView*)theWebView
+- (void)webViewDidStartLoad:(WKWebView*)theWebView
 {
 }
 
-- (void)webViewDidFinishLoad:(UIWebView*)theWebView
+- (void)webViewDidFinishLoad:(WKWebView*)theWebView
 {
     if (self.callbackId != nil) {
         // TODO: It would be more useful to return the URL the page is actually on (e.g. if it's been redirected).
@@ -469,7 +501,7 @@
     }
 }
 
-- (void)webView:(UIWebView*)theWebView didFailLoadWithError:(NSError*)error
+- (void)webView:(WKWebView*)theWebView didFailLoadWithError:(NSError*)error
 {
     if (self.callbackId != nil) {
         NSString* url = [self.inAppBrowserViewController.currentURL absoluteString];
@@ -520,7 +552,8 @@
         _prevUserAgent = prevUserAgent;
         _browserOptions = browserOptions;
 #ifdef __CORDOVA_4_0_0
-        _webViewDelegate = [[CDVUIWebViewDelegate alloc] initWithDelegate:self];
+        _webViewDelegate = [[CDVWKWebViewUIDelegate alloc] initWithTitle:@"cordova"];
+        //_webViewDelegate = [[CDVUIWebViewDelegate alloc] initWithDelegate:self];
 #else
         _webViewDelegate = [[CDVWebViewDelegate alloc] initWithDelegate:self];
 #endif
@@ -533,7 +566,7 @@
 
 // Prevent crashes on closing windows
 -(void)dealloc {
-   self.webView.delegate = nil;
+   //self.webView.delegate = nil;
 }
 
 - (void)createViews
@@ -543,14 +576,31 @@
     CGRect webViewBounds = self.view.bounds;
     BOOL toolbarIsAtBottom = ![_browserOptions.toolbarposition isEqualToString:kInAppBrowserToolbarBarPositionTop];
     webViewBounds.size.height -= _browserOptions.location ? FOOTER_HEIGHT : TOOLBAR_HEIGHT;
-    self.webView = [[UIWebView alloc] initWithFrame:webViewBounds];
 
-    self.webView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+    //self.webView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 
+    WKUserContentController* userContentController = [[WKUserContentController alloc] init];
+    
+            //TODO Script handler attaching
+            // scriptMessageHandler is the object that conforms to the WKScriptMessageHandler protocol
+            // see https://developer.apple.com/library/prerelease/ios/documentation/WebKit/Reference/WKScriptMessageHandler_Ref/index.html#//apple_ref/swift/intf/WKScriptMessageHandler
+            //if ([_webViewDelegate conformsToProtocol:@protocol(WKScriptMessageHandler)]) {
+            //    NSLog(@"Add handler");
+            //    [userContentController addScriptMessageHandler:self name:@"cordova"];
+            //}
+    
+            WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
+            configuration.userContentController = userContentController;
+    
+            self.webView = [[WKWebView alloc] initWithFrame:webViewBounds configuration:configuration];
+    CDVWKWebViewUIDelegate* webViewUIDelegate = [[CDVWKWebViewUIDelegate alloc] initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
+    ((WKWebView*)self.webView).UIDelegate = webViewUIDelegate;
+    
     [self.view addSubview:self.webView];
     [self.view sendSubviewToBack:self.webView];
 
-    self.webView.delegate = _webViewDelegate;
+    
+    //self.webView.delegate = _webViewDelegate;
     self.webView.backgroundColor = [UIColor whiteColor];
 
     self.webView.clearsContextBeforeDrawing = YES;
@@ -558,8 +608,9 @@
     self.webView.contentMode = UIViewContentModeScaleToFill;
     self.webView.multipleTouchEnabled = YES;
     self.webView.opaque = YES;
-    self.webView.scalesPageToFit = NO;
+    //self.webView.scalesPageToFit = NO;
     self.webView.userInteractionEnabled = YES;
+    
 
     self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     self.spinner.alpha = 1.000;
@@ -877,9 +928,9 @@
     }
 }
 
-#pragma mark UIWebViewDelegate
+#pragma mark WKWebViewDelegate
 
-- (void)webViewDidStartLoad:(UIWebView*)theWebView
+- (void)webViewDidStartLoad:(WKWebView*)theWebView
 {
     // loading url, start spinner, update back/forward
 
@@ -892,7 +943,8 @@
     return [self.navigationDelegate webViewDidStartLoad:theWebView];
 }
 
-- (BOOL)webView:(UIWebView*)theWebView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
+
+- (BOOL)webView:(WKWebView*)theWebView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
 {
     BOOL isTopLevelNavigation = [request.URL isEqual:[request mainDocumentURL]];
 
@@ -902,7 +954,7 @@
     return [self.navigationDelegate webView:theWebView shouldStartLoadWithRequest:request navigationType:navigationType];
 }
 
-- (void)webViewDidFinishLoad:(UIWebView*)theWebView
+- (void)webViewDidFinishLoad:(WKWebView*)theWebView
 {
     // update url, stop spinner, update back/forward
 
@@ -923,7 +975,9 @@
     //    from it must pass through its white-list. This *does* break PDFs that
     //    contain links to other remote PDF/websites.
     // More info at https://issues.apache.org/jira/browse/CB-2225
-    BOOL isPDF = [@"true" isEqualToString :[theWebView stringByEvaluatingJavaScriptFromString:@"document.body==null"]];
+    BOOL isPDF = NO;
+    //TODO webview class
+    //BOOL isPDF = [@"true" isEqualToString :[theWebView stringByEvaluatingJavaScriptFromString:@"document.body==null"]];
     if (isPDF) {
         [CDVUserAgentUtil setUserAgent:_prevUserAgent lockToken:_userAgentLockToken];
     }
@@ -931,7 +985,7 @@
     [self.navigationDelegate webViewDidFinishLoad:theWebView];
 }
 
-- (void)webView:(UIWebView*)theWebView didFailLoadWithError:(NSError*)error
+- (void)webView:(WKWebView*)theWebView didFailLoadWithError:(NSError*)error
 {
     // log fail message, stop spinner, update back/forward
     NSLog(@"webView:didFailLoadWithError - %ld: %@", (long)error.code, [error localizedDescription]);
@@ -1104,4 +1158,3 @@
 
 
 @end
-
