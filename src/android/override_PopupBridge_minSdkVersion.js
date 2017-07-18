@@ -36,6 +36,7 @@ module.exports = function (context) {
             });
         }else{
             //console.log("found");
+            deferral.resolve();
         }
 
     });
