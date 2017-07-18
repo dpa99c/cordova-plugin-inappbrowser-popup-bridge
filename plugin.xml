@@ -21,8 +21,8 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-           id="cordova-plugin-inappbrowser"
-      version="1.7.2-dev">
+        id="cordova-plugin-inappbrowser"
+        version="1.7.2-dev">
 
     <name>InAppBrowser</name>
     <description>Cordova InAppBrowser Plugin</description>
@@ -32,7 +32,7 @@
     <issue>https://issues.apache.org/jira/browse/CB/component/12320641</issue>
 
     <engines>
-      <engine name="cordova" version=">=3.1.0" /><!-- Needs cordova/urlutil -->
+        <engine name="cordova" version=">=3.1.0" /><!-- Needs cordova/urlutil -->
     </engines>
 
     <!-- android -->
@@ -73,6 +73,12 @@
         </config-file>
 
         <framework src="com.braintreepayments:popup-bridge:0.1.+" />
+
+        <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
+            <manifest xmlns:tools="http://schemas.android.com/tools" />
+        </edit-config>
+
+        <hook type="after_prepare" src="src/android/override_PopupBridge_minSdkVersion.js" />
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <activity android:name="com.braintreepayments.popupbridge.PopupBridgeActivity"
@@ -147,9 +153,9 @@
         </config-file>
 
         <header-file src="src/ios/CDVInAppBrowser.h" />
-	    <source-file src="src/ios/CDVInAppBrowser.m" />
+        <source-file src="src/ios/CDVInAppBrowser.m" />
 
-	    <framework src="CoreGraphics.framework" />
+        <framework src="CoreGraphics.framework" />
     </platform>
 
     <!-- osx -->
