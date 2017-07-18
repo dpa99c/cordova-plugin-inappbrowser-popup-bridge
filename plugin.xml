@@ -19,6 +19,7 @@
 -->
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
            id="cordova-plugin-inappbrowser"
       version="1.7.2-dev">
 
@@ -64,6 +65,25 @@
         <resource-file src="src/android/res/drawable-mdpi/ic_action_remove.png" target="res/drawable-mdpi/ic_action_remove.png" />
         <resource-file src="src/android/res/drawable-xhdpi/ic_action_remove.png" target="res/drawable-xhdpi/ic_action_remove.png" />
         <resource-file src="src/android/res/drawable-xxhdpi/ic_action_remove.png" target="res/drawable-xxhdpi/ic_action_remove.png" />
+
+        <!-- PopupBridge -->
+        <config-file target="config.xml" parent="/*">
+            <preference name="android-minSdkVersion" value="19" />
+        </config-file>
+
+        <framework src="com.braintreepayments:popup-bridge:0.1.+" />
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity android:name="com.braintreepayments.popupbridge.PopupBridgeActivity"
+                      android:launchMode="singleTask">
+                <intent-filter>
+                    <action android:name="android.intent.action.VIEW" />
+                    <category android:name="android.intent.category.DEFAULT" />
+                    <category android:name="android.intent.category.BROWSABLE" />
+                    <data android:scheme="${applicationId}.popupbridge" />
+                </intent-filter>
+            </activity>
+        </config-file>
 
     </platform>
 
