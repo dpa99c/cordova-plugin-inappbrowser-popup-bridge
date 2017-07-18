@@ -597,6 +597,7 @@
     self.webView = [[WKWebView alloc] initWithFrame:webViewBounds configuration:configuration];
     CDVWKWebViewUIDelegate* webViewUIDelegate = [[CDVWKWebViewUIDelegate alloc] initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
     ((WKWebView*)self.webView).UIDelegate = webViewUIDelegate;
+    self.popupBridge = [[POPPopupBridge alloc] initWithWebView:self.webView delegate:self];
     
     [self.view addSubview:self.webView];
     [self.view sendSubviewToBack:self.webView];
@@ -701,6 +702,16 @@
     [self.view addSubview:self.toolbar];
     [self.view addSubview:self.addressLabel];
     [self.view addSubview:self.spinner];
+}
+    
+#pragma mark - POPPopupBridge
+    
+- (void)popupBridge:(POPPopupBridge *)bridge requestsPresentationOfViewController:(UIViewController *)viewController {
+    [self presentViewController:viewController animated:YES completion:nil];
+}
+    
+- (void)popupBridge:(POPPopupBridge *)bridge requestsDismissalOfViewController:(UIViewController *)viewController {
+    [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void) setWebViewFrame : (CGRect) frame {

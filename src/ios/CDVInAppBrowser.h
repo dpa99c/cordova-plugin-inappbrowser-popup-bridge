@@ -20,6 +20,7 @@
 #import <Cordova/CDVPlugin.h>
 #import <Cordova/CDVInvokedUrlCommand.h>
 #import <Cordova/CDVScreenOrientationDelegate.h>
+#import "POPPopupBridge.h"
 
 #ifdef __CORDOVA_4_0_0
     //#import <Cordova/CDVUIWebViewDelegate.h>
@@ -69,7 +70,7 @@
 
 @end
 
-@interface CDVInAppBrowserViewController : UIViewController <CDVScreenOrientationDelegate>{
+@interface CDVInAppBrowserViewController : UIViewController <CDVScreenOrientationDelegate,POPPopupBridgeDelegate>{
     @private
     NSString* _userAgent;
     NSString* _prevUserAgent;
@@ -95,6 +96,8 @@
 @property (nonatomic, weak) id <CDVScreenOrientationDelegate> orientationDelegate;
 @property (nonatomic, weak) CDVInAppBrowser* navigationDelegate;
 @property (nonatomic) NSURL* currentURL;
+    
+@property (nonatomic, strong) POPPopupBridge *popupBridge;
 
 - (void)close;
 - (void)navigateTo:(NSURL*)url;
