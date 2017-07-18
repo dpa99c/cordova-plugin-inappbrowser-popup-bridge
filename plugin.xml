@@ -20,6 +20,7 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
            id="cordova-plugin-inappbrowser"
       version="1.7.2-dev">
 
@@ -68,7 +69,7 @@
 
         <!-- PopupBridge -->
         <config-file target="config.xml" parent="/*">
-            <preference name="android-minSdkVersion" value="19" />
+            <preference name="android-minSdkVersion" value="16" tools:overrideLibrary="com.braintreepayments.popupbridge" />
         </config-file>
 
         <framework src="com.braintreepayments:popup-bridge:0.1.+" />
