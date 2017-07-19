@@ -6,9 +6,11 @@ var fs = require('fs'),
 module.exports = function (context) {
     var deferral = context.requireCordovaModule('q').defer();
 
+    var toolsAttribute = "xmlns:tools=\"http://schemas.android.com/tools\"";
+    var manifestOpen = "<manifest";
 
-    var overrideAttribute = "tools:overrideLibrary=\"com.braintreepayments.popupbridge\" ";
-    var usesSdkOpen = "<uses-sdk ";
+    var overrideAttribute = "tools:overrideLibrary=\"com.braintreepayments.popupbridge\"";
+    var usesSdkOpen = "<uses-sdk";
 
     var projectRoot = context.opts.projectRoot;
     var platformRoot = path.join(projectRoot, 'platforms/android');
@@ -22,11 +24,18 @@ module.exports = function (context) {
 
         manifest = manifest.toString();
 
-        if(manifest.indexOf(overrideAttribute) == -1){
-            //console.log("not found");
+        var shouldWrite = false;
+        if(manifest.indexOf(overrideAttribute) == -1) {
+            manifest = manifest.replace(usesSdkOpen, usesSdkOpen + " " + overrideAttribute + " ");
+            shouldWrite = true;
+        }
 
-            manifest = manifest.replace(usesSdkOpen, usesSdkOpen + overrideAttribute);
+        if(manifest.indexOf(toolsAttribute) == -1) {
+            manifest = manifest.replace(manifestOpen, manifestOpen + " " + toolsAttribute + " ");
+            shouldWrite = true;
+        }
 
+        if(shouldWrite){
             fs.writeFile(manifestPath, manifest, 'utf8', function (err) {
                 if (err) {
                     deferral.reject("Failed to write AndroidManifest.xml: " + err);
@@ -35,7 +44,7 @@ module.exports = function (context) {
                 deferral.resolve();
             });
         }else{
-            //console.log("found");
+            //console.log("no write required");
             deferral.resolve();
         }
 

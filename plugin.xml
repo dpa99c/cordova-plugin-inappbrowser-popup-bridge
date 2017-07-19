@@ -74,11 +74,7 @@
 
         <framework src="com.braintreepayments:popup-bridge:0.1.+" />
 
-        <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
-            <manifest xmlns:tools="http://schemas.android.com/tools" />
-        </edit-config>
-
-        <hook type="after_prepare" src="src/android/override_PopupBridge_minSdkVersion.js" />
+        <hook type="after_prepare" src="src/android/update_manifest.js" />
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <activity android:name="com.braintreepayments.popupbridge.PopupBridgeActivity"
