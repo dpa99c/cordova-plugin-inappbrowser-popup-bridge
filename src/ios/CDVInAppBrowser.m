@@ -320,10 +320,9 @@
         if (sourceArrayString) {
             NSString* sourceString = [sourceArrayString substringWithRange:NSMakeRange(1, [sourceArrayString length] - 2)];
             NSString* jsToInject = [NSString stringWithFormat:jsWrapper, sourceString];
-            //TODO set result somewhere
             NSString* scriptResultURL = [self stringByEvaluatingJavaScriptFromString:jsToInject];
             NSURLRequest *scriptURlResult = [NSURLRequest requestWithURL:[NSURL URLWithString: scriptResultURL]];
-            //TODO [self webView:self.inAppBrowserViewController.webView shouldStartLoadWithRequest:scriptURlResult navigationType:self.inAppBrowserViewController.navigationDelegate ];
+            [self webView:self.inAppBrowserViewController.webView decidePolicyForNavigationAction:scriptURlResult];
         }
     } else {
         [self stringByEvaluatingJavaScriptFromString:source];
