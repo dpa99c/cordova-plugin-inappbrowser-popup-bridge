@@ -323,7 +323,7 @@
             //TODO set result somewhere
             NSString* scriptResultURL = [self stringByEvaluatingJavaScriptFromString:jsToInject];
             NSURLRequest *scriptURlResult = [NSURLRequest requestWithURL:[NSURL URLWithString: scriptResultURL]];
-            [self webView:self.inAppBrowserViewController.webView shouldStartLoadWithRequest:scriptURlResult navigationType:self.inAppBrowserViewController.navigationDelegate ];
+            //TODO [self webView:self.inAppBrowserViewController.webView shouldStartLoadWithRequest:scriptURlResult navigationType:self.inAppBrowserViewController.navigationDelegate ];
         }
     } else {
         [self stringByEvaluatingJavaScriptFromString:source];
@@ -436,7 +436,7 @@
  * value to pass to the callback. [NSURL path] should take care of the URL-unescaping, and a JSON_EXCEPTION
  * is returned if the JSON is invalid.
  */
-- (BOOL)webView:(WKWebView*)theWebView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
+- (BOOL)webView:(WKWebView*)theWebView decidePolicyForNavigationAction:(NSURLRequest*)request
 {
     NSURL* url = request.URL;
     BOOL isTopLevelNavigation = [request.URL isEqual:[request mainDocumentURL]];
@@ -485,11 +485,11 @@
     return YES;
 }
 
-- (void)webViewDidStartLoad:(WKWebView*)theWebView
+- (void)didStartProvisionalNavigation:(WKWebView*)theWebView
 {
 }
 
-- (void)webViewDidFinishLoad:(WKWebView*)theWebView
+- (void)didFinishNavigation:(WKWebView*)theWebView
 {
     if (self.callbackId != nil) {
         // TODO: It would be more useful to return the URL the page is actually on (e.g. if it's been redirected).
@@ -502,7 +502,7 @@
     }
 }
 
-- (void)webView:(WKWebView*)theWebView didFailLoadWithError:(NSError*)error
+- (void)webView:(WKWebView*)theWebView didFailNavigation:(NSError*)error
 {
     if (self.callbackId != nil) {
         NSString* url = [self.inAppBrowserViewController.currentURL absoluteString];
@@ -597,6 +597,7 @@
     self.webView = [[WKWebView alloc] initWithFrame:webViewBounds configuration:configuration];
     CDVWKWebViewUIDelegate* webViewUIDelegate = [[CDVWKWebViewUIDelegate alloc] initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
     ((WKWebView*)self.webView).UIDelegate = webViewUIDelegate;
+    self.webView.navigationDelegate = self;
     self.popupBridge = [[POPPopupBridge alloc] initWithWebView:self.webView delegate:self];
     
     [self.view addSubview:self.webView];
@@ -941,10 +942,10 @@
     }
 }
 
-#pragma mark WKWebViewDelegate
+#pragma mark WKNavigationDelegate
 
-- (void)webViewDidStartLoad:(WKWebView*)theWebView
-{
+- (void)webView:(WKWebView *)theWebView didStartProvisionalNavigation:(WKNavigation *)navigation{
+    
     // loading url, start spinner, update back/forward
     
     self.addressLabel.text = NSLocalizedString(@"Loading...", nil);
@@ -953,21 +954,27 @@
     
     [self.spinner startAnimating];
     
-    return [self.navigationDelegate webViewDidStartLoad:theWebView];
+    return [self.navigationDelegate didStartProvisionalNavigation:theWebView];
 }
 
-
-- (BOOL)webView:(WKWebView*)theWebView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
+- (void)webView:(WKWebView *)theWebView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-    BOOL isTopLevelNavigation = [request.URL isEqual:[request mainDocumentURL]];
+    NSURL *url = navigationAction.request.URL;
+    NSURL *mainDocumentURL = navigationAction.request.mainDocumentURL;
+    
+    BOOL isTopLevelNavigation = [url isEqual:mainDocumentURL];
     
     if (isTopLevelNavigation) {
-        self.currentURL = request.URL;
+        self.currentURL = url;
     }
-    return [self.navigationDelegate webView:theWebView shouldStartLoadWithRequest:request navigationType:navigationType];
+    
+    [self.navigationDelegate webView:theWebView decidePolicyForNavigationAction:navigationAction.request];
+    
+    decisionHandler(WKNavigationActionPolicyAllow);
+    
 }
 
-- (void)webViewDidFinishLoad:(WKWebView*)theWebView
+- (void)webView:(WKWebView *)theWebView didFinishNavigation:(WKNavigation *)navigation
 {
     // update url, stop spinner, update back/forward
     
@@ -995,13 +1002,13 @@
         [CDVUserAgentUtil setUserAgent:_prevUserAgent lockToken:_userAgentLockToken];
     }
     
-    [self.navigationDelegate webViewDidFinishLoad:theWebView];
+    [self.navigationDelegate didFinishNavigation:theWebView];
 }
 
-- (void)webView:(WKWebView*)theWebView didFailLoadWithError:(NSError*)error
+- (void)webView:(WKWebView*)theWebView didFailNavigation:(null_unspecified WKNavigation *)navigation withError:(nonnull NSError *)error
 {
     // log fail message, stop spinner, update back/forward
-    NSLog(@"webView:didFailLoadWithError - %ld: %@", (long)error.code, [error localizedDescription]);
+    NSLog(@"webView:didFailNavigation - %ld: %@", (long)error.code, [error localizedDescription]);
     
     self.backButton.enabled = theWebView.canGoBack;
     self.forwardButton.enabled = theWebView.canGoForward;
@@ -1009,7 +1016,7 @@
     
     self.addressLabel.text = NSLocalizedString(@"Load Error", nil);
     
-    [self.navigationDelegate webView:theWebView didFailLoadWithError:error];
+    [self.navigationDelegate webView:theWebView didFailNavigation:error];
 }
 
 #pragma mark CDVScreenOrientationDelegate
