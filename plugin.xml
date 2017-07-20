@@ -152,6 +152,28 @@
         <source-file src="src/ios/CDVInAppBrowser.m" />
 
         <framework src="CoreGraphics.framework" />
+
+        <!-- Popup Bridge -->
+        <header-file src="src/ios/AppDelegate+PopupBridge.h" />
+        <source-file src="src/ios/AppDelegate+PopupBridge.m" />
+
+        <header-file src="src/ios/POPPopUpBridge.h" />
+        <source-file src="src/ios/POPPopUpBridge.m" />
+
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+            <array>
+                <dict>
+                    <key>CFBundleTypeRole</key>
+                    <string>Editor</string>
+                    <key>CFBundleURLName</key>
+                    <string></string>
+                    <key>CFBundleURLSchemes</key>
+                    <array>
+                        <string>$PACKAGE_NAME.popupbridge</string>
+                    </array>
+                </dict>
+            </array>
+        </config-file>
     </platform>
 
     <!-- osx -->
