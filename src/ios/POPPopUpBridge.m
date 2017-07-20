@@ -4,7 +4,7 @@
 
 @interface POPPopupBridge () <SFSafariViewControllerDelegate>
 @property (nonatomic, readwrite, weak) id <POPPopupBridgeDelegate> delegate;
-@property (nonnull, nonatomic, strong) UIWebView *webView;
+@property (nonnull, nonatomic, strong) WKWebView *webView;
 @property (nonatomic, strong) SFSafariViewController *safariViewController;
 @end
 
@@ -19,7 +19,7 @@ NSString * const kPOPURLHost = @"popupbridgev1";
     scheme = returnURLScheme;
 }
 
-- (id)initWithWebView:(UIWebView *)webView delegate:(id<POPPopupBridgeDelegate>)delegate {
+- (id)initWithWebView:(WKWebView *)webView delegate:(id<POPPopupBridgeDelegate>)delegate {
     if (!scheme) {
         [NSException raise:@"POPPopupBridgeSchemeNotSet" format:@"PopupBridge requires a URL scheme to be set"];
         return nil;

@@ -29,7 +29,7 @@ extern NSString * const kPOPURLHost;
 - (void)popupBridge:(POPPopupBridge *)bridge receivedMessage:(NSString *)messageName data:(nullable NSString *)data;
 @end
 
-/// Popup Bridge provides an alternative to window.open that works in UIWebView.
+/// Popup Bridge provides an alternative to window.open that works in WKWebView.
 /// Pages will be opened in Safari View Controllers.
 @interface POPPopupBridge : NSObject <WKScriptMessageHandler>
 
@@ -37,7 +37,7 @@ extern NSString * const kPOPURLHost;
 ///
 /// @param webView The web view to add a script message handler to. Do not change the web view's configuration or user content controller after initializing Popup Bridge.
 /// @param delegate A delegate that presents and dismisses the Safari View Controllers.
-- (id)initWithWebView:(UIWebView *)webView delegate:(id<POPPopupBridgeDelegate>)delegate;
+- (id)initWithWebView:(WKWebView *)webView delegate:(id<POPPopupBridgeDelegate>)delegate;
 
 /// Set the URL Scheme that you have registered in your Info.plist.
 + (void)setReturnURLScheme:(NSString *)returnURLScheme;
