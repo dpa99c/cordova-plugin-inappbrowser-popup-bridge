@@ -201,16 +201,7 @@
         }
     }
     
-    
-    /* UIWebView options
-     self.inAppBrowserViewController.webView.scalesPageToFit = browserOptions.enableviewportscale;
-     self.inAppBrowserViewController.webView.mediaPlaybackRequiresUserAction = browserOptions.mediaplaybackrequiresuseraction;
-     self.inAppBrowserViewController.webView.allowsInlineMediaPlayback = browserOptions.allowinlinemediaplayback;
-     if (IsAtLeastiOSVersion(@"6.0")) {
-     self.inAppBrowserViewController.webView.keyboardDisplayRequiresUserAction = browserOptions.keyboarddisplayrequiresuseraction;
-     self.inAppBrowserViewController.webView.suppressesIncrementalRendering = browserOptions.suppressesincrementalrendering;
-     }
-     */
+
     [self.inAppBrowserViewController navigateTo:url];
     if (!browserOptions.hidden) {
         [self show:nil];
@@ -527,6 +518,7 @@
     // Also - this is required for the PDF/User-Agent bug work-around.
     self.inAppBrowserViewController = nil;
     
+    
     if (IsAtLeastiOSVersion(@"7.0")) {
         if (_previousStatusBarStyle != -1) {
             [[UIApplication sharedApplication] setStatusBarStyle:_previousStatusBarStyle];
@@ -536,7 +528,7 @@
     _previousStatusBarStyle = -1; // this value was reset before reapplying it. caused statusbar to stay black on ios7
 }
 
-@end
+@end //CDVInAppBrowser
 
 #pragma mark CDVInAppBrowserViewController
 
@@ -597,6 +589,7 @@
     CDVWKWebViewUIDelegate* webViewUIDelegate = [[CDVWKWebViewUIDelegate alloc] initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
     ((WKWebView*)self.webView).UIDelegate = webViewUIDelegate;
     self.webView.navigationDelegate = self;
+    self.webView.UIDelegate = self;
     self.popupBridge = [[POPPopupBridge alloc] initWithWebView:self.webView delegate:self];
     
     [self.view addSubview:self.webView];
@@ -702,16 +695,6 @@
     [self.view addSubview:self.toolbar];
     [self.view addSubview:self.addressLabel];
     [self.view addSubview:self.spinner];
-}
-    
-#pragma mark - POPPopupBridge
-    
-- (void)popupBridge:(POPPopupBridge *)bridge requestsPresentationOfViewController:(UIViewController *)viewController {
-    [self presentViewController:viewController animated:YES completion:nil];
-}
-    
-- (void)popupBridge:(POPPopupBridge *)bridge requestsDismissalOfViewController:(UIViewController *)viewController {
-    [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void) setWebViewFrame : (CGRect) frame {
@@ -848,13 +831,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-}
-
-- (void)viewDidUnload
-{
-    [self.webView loadHTMLString:nil baseURL:nil];
-    [CDVUserAgentUtil releaseLock:&_userAgentLockToken];
-    [super viewDidUnload];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
@@ -1046,7 +1022,17 @@
     return YES;
 }
 
-@end
+#pragma mark - POPPopupBridgeDelegate
+
+- (void)popupBridge:(POPPopupBridge *)bridge requestsPresentationOfViewController:(UIViewController *)viewController {
+    [self presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)popupBridge:(POPPopupBridge *)bridge requestsDismissalOfViewController:(UIViewController *)viewController {
+    [viewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+@end //CDVInAppBrowserViewController
 
 @implementation CDVInAppBrowserOptions
 
@@ -1110,7 +1096,7 @@
     return obj;
 }
 
-@end
+@end //CDVInAppBrowserOptions
 
 @implementation CDVInAppBrowserNavigationController : UINavigationController
 
@@ -1176,4 +1162,4 @@
 }
 
 
-@end
+@end //CDVInAppBrowserNavigationController

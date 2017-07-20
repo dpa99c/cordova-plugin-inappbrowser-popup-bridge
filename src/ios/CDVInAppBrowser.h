@@ -70,7 +70,7 @@
 
 @end
 
-@interface CDVInAppBrowserViewController : UIViewController <CDVScreenOrientationDelegate,WKNavigationDelegate,POPPopupBridgeDelegate>{
+@interface CDVInAppBrowserViewController : UIViewController <CDVScreenOrientationDelegate,WKNavigationDelegate,WKUIDelegate,POPPopupBridgeDelegate>{
     @private
     NSString* _userAgent;
     NSString* _prevUserAgent;
