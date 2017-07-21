@@ -201,7 +201,7 @@
         }
     }
     
-
+    
     [self.inAppBrowserViewController navigateTo:url];
     if (!browserOptions.hidden) {
         [self show:nil];
@@ -536,6 +536,8 @@
 
 @synthesize currentURL;
 
+BOOL viewRenderedAtLeastOnce = FALSE;
+
 - (id)initWithUserAgent:(NSString*)userAgent prevUserAgent:(NSString*)prevUserAgent browserOptions: (CDVInAppBrowserOptions*) browserOptions
 {
     self = [super init];
@@ -830,6 +832,7 @@
 
 - (void)viewDidLoad
 {
+    viewRenderedAtLeastOnce = FALSE;
     [super viewDidLoad];
 }
 
@@ -891,10 +894,11 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    if (IsAtLeastiOSVersion(@"7.0")) {
+    if (IsAtLeastiOSVersion(@"7.0") && !viewRenderedAtLeastOnce) {
+        viewRenderedAtLeastOnce = TRUE;
         CGRect viewBounds = [self.webView bounds];
-        viewBounds.origin.y = 20;
-        viewBounds.size.height = viewBounds.size.height - 20;
+        viewBounds.origin.y = STATUSBAR_HEIGHT;
+        viewBounds.size.height = viewBounds.size.height - STATUSBAR_HEIGHT;
         self.webView.frame = viewBounds;
         [[UIApplication sharedApplication] setStatusBarStyle:[self preferredStatusBarStyle]];
     }
