@@ -203,13 +203,25 @@
     
     
     [self.inAppBrowserViewController navigateTo:url];
-    if (!browserOptions.hidden) {
-        [self show:nil];
+    [self show:nil withNoAnimate:browserOptions.hidden];
+    if (browserOptions.hidden) {
+        self.inAppBrowserViewController.view.hidden = YES;
     }
+    
 }
 
-- (void)show:(CDVInvokedUrlCommand*)command
+- (void)show:(CDVInvokedUrlCommand*)command{
+    [self show:nil withNoAnimate:NO];
+}
+
+- (void)show:(CDVInvokedUrlCommand*)command withNoAnimate:(BOOL)noAnimate
 {
+    BOOL wasHidden = self.inAppBrowserViewController.view.hidden;
+    if(wasHidden){
+        self.inAppBrowserViewController.view.hidden = NO;
+        noAnimate = YES;
+    }
+    
     if (self.inAppBrowserViewController == nil) {
         NSLog(@"Tried to show IAB after it was closed.");
         return;
@@ -239,7 +251,7 @@
             [tmpWindow setWindowLevel:UIWindowLevelNormal];
             
             [tmpWindow makeKeyAndVisible];
-            [tmpController presentViewController:nav animated:YES completion:nil];
+            [tmpController presentViewController:nav animated:!noAnimate completion:nil];
         }
     });
 }
@@ -901,6 +913,7 @@ BOOL viewRenderedAtLeastOnce = FALSE;
         viewBounds.size.height = viewBounds.size.height - STATUSBAR_HEIGHT;
         self.webView.frame = viewBounds;
         [[UIApplication sharedApplication] setStatusBarStyle:[self preferredStatusBarStyle]];
+        
     }
     [self rePositionViews];
     
@@ -1173,3 +1186,4 @@ BOOL viewRenderedAtLeastOnce = FALSE;
 
 
 @end //CDVInAppBrowserNavigationController
+
