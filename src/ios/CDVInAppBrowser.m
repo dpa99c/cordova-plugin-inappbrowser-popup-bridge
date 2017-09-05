@@ -524,8 +524,24 @@
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
         self.callbackId = nil;
     }
+    
+    [self.inAppBrowserViewController.popupBridge destroy];
+    self.inAppBrowserViewController.popupBridge = nil;
+    
+    [self.inAppBrowserViewController.configuration.userContentController removeScriptMessageHandlerForName:@"cordova"];
+    self.inAppBrowserViewController.configuration = nil;
+    
+    [self.inAppBrowserViewController.webView stopLoading];
+    [self.inAppBrowserViewController.webView loadHTMLString:@"" baseURL:nil];
+    [self.inAppBrowserViewController.webView removeFromSuperview];
+    [self.inAppBrowserViewController.webView setUIDelegate:nil];
+    [self.inAppBrowserViewController.webView setNavigationDelegate:nil];
+    self.inAppBrowserViewController.webView = nil;
+    
     // Set navigationDelegate to nil to ensure no callbacks are received from it.
     self.inAppBrowserViewController.navigationDelegate = nil;
+    
+    
     // Don't recycle the ViewController since it may be consuming a lot of memory.
     // Also - this is required for the PDF/User-Agent bug work-around.
     self.inAppBrowserViewController = nil;
@@ -536,7 +552,6 @@
             [[UIApplication sharedApplication] setStatusBarStyle:_previousStatusBarStyle];
         }
     }
-    
     _previousStatusBarStyle = -1; // this value was reset before reapplying it. caused statusbar to stay black on ios7
 }
 
@@ -549,6 +564,7 @@
 @synthesize currentURL;
 
 BOOL viewRenderedAtLeastOnce = FALSE;
+BOOL isExiting = FALSE;
 
 - (id)initWithUserAgent:(NSString*)userAgent prevUserAgent:(NSString*)prevUserAgent browserOptions: (CDVInAppBrowserOptions*) browserOptions
 {
@@ -570,9 +586,8 @@ BOOL viewRenderedAtLeastOnce = FALSE;
     return self;
 }
 
-// Prevent crashes on closing windows
 -(void)dealloc {
-    //self.webView.delegate = nil;
+    //NSLog(@"dealloc");
 }
 
 - (void)createViews
@@ -587,18 +602,18 @@ BOOL viewRenderedAtLeastOnce = FALSE;
     
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
     
-    WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
-    configuration.userContentController = userContentController;
-    configuration.processPool = [[CDVWKProcessPoolFactory sharedFactory] sharedProcessPool];
+    self.configuration = [[WKWebViewConfiguration alloc] init];
+    self.configuration.userContentController = userContentController;
+    self.configuration.processPool = [[CDVWKProcessPoolFactory sharedFactory] sharedProcessPool];
     
     // scriptMessageHandler is the object that conforms to the WKScriptMessageHandler protocol
     // see https://developer.apple.com/documentation/webkit/wkscriptmessagehandler
     if ([_webViewDelegate conformsToProtocol:@protocol(WKScriptMessageHandler)]) {
         NSLog(@"Add handler");
-        [configuration.userContentController addScriptMessageHandler:self name:@"cordova"];
+        [self.configuration.userContentController addScriptMessageHandler:self name:@"cordova"];
     }
     
-    self.webView = [[WKWebView alloc] initWithFrame:webViewBounds configuration:configuration];
+    self.webView = [[WKWebView alloc] initWithFrame:webViewBounds configuration:self.configuration];
     CDVWKWebViewUIDelegate* webViewUIDelegate = [[CDVWKWebViewUIDelegate alloc] initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
     ((WKWebView*)self.webView).UIDelegate = webViewUIDelegate;
     
@@ -692,12 +707,12 @@ BOOL viewRenderedAtLeastOnce = FALSE;
     self.addressLabel.textColor = [UIColor colorWithWhite:1.000 alpha:1.000];
     self.addressLabel.userInteractionEnabled = NO;
     
-    NSString* frontArrowString = NSLocalizedString(@"►", nil); // create arrow from Unicode char
+    NSString* frontArrowString = NSLocalizedString(@"â–º", nil); // create arrow from Unicode char
     self.forwardButton = [[UIBarButtonItem alloc] initWithTitle:frontArrowString style:UIBarButtonItemStylePlain target:self action:@selector(goForward:)];
     self.forwardButton.enabled = YES;
     self.forwardButton.imageInsets = UIEdgeInsetsZero;
     
-    NSString* backArrowString = NSLocalizedString(@"◄", nil); // create arrow from Unicode char
+    NSString* backArrowString = NSLocalizedString(@"â—„", nil); // create arrow from Unicode char
     self.backButton = [[UIBarButtonItem alloc] initWithTitle:backArrowString style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
     self.backButton.enabled = YES;
     self.backButton.imageInsets = UIEdgeInsetsZero;
@@ -849,6 +864,15 @@ BOOL viewRenderedAtLeastOnce = FALSE;
     [super viewDidLoad];
 }
 
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    if (isExiting && (self.navigationDelegate != nil) && [self.navigationDelegate respondsToSelector:@selector(browserExit)]) {
+        [self.navigationDelegate browserExit];
+        isExiting = FALSE;
+    }
+}
+
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
     return UIStatusBarStyleDefault;
@@ -863,14 +887,11 @@ BOOL viewRenderedAtLeastOnce = FALSE;
     [CDVUserAgentUtil releaseLock:&_userAgentLockToken];
     self.currentURL = nil;
     
-    if ((self.navigationDelegate != nil) && [self.navigationDelegate respondsToSelector:@selector(browserExit)]) {
-        [self.navigationDelegate browserExit];
-    }
-    
     __weak UIViewController* weakSelf = self;
     
     // Run later to avoid the "took a long time" log message.
     dispatch_async(dispatch_get_main_queue(), ^{
+        isExiting = TRUE;
         if ([weakSelf respondsToSelector:@selector(presentingViewController)]) {
             [[weakSelf presentingViewController] dismissViewControllerAnimated:YES completion:nil];
         } else {
@@ -1187,3 +1208,4 @@ BOOL viewRenderedAtLeastOnce = FALSE;
 
 
 @end //CDVInAppBrowserNavigationController
+

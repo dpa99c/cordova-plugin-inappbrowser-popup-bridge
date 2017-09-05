@@ -27,9 +27,9 @@ NSString * const kPOPURLHost = @"popupbridgev1";
     if (self = [super init]) {
         self.delegate = delegate;
         self.webView = webView;
-
+        
         [webView.configuration.userContentController addScriptMessageHandler:self name:kPOPScriptMessageHandlerName];
-
+        
         NSString *javascript = [[[[self javascriptTemplate] stringByReplacingOccurrencesOfString:@"%%SCHEME%%" withString:scheme]  stringByReplacingOccurrencesOfString:@"%%SCRIPT_MESSAGE_HANDLER_NAME%%" withString:kPOPScriptMessageHandlerName] stringByReplacingOccurrencesOfString:@"%%HOST%%" withString:kPOPURLHost];
         WKUserScript *script = [[WKUserScript alloc] initWithSource:javascript injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
         [webView.configuration.userContentController addUserScript:script];
@@ -40,30 +40,30 @@ NSString * const kPOPURLHost = @"popupbridgev1";
 - (NSString *)javascriptTemplate {
     // NB: This string does not maintain newlines, so you cannot use single-line JS comments.
     return @"\
-        ;(function () {\
-            if (!window.popupBridge) { window.popupBridge = {}; };\
-            \
-            window.popupBridge.getReturnUrlPrefix = function getReturnUrlPrefix() {\
-                return '%%SCHEME%%://%%HOST%%/';\
-            };\
-            \
-            window.popupBridge.open = function open(url) {\
-                window.webkit.messageHandlers.%%SCRIPT_MESSAGE_HANDLER_NAME%%.postMessage({\
-                    url: url\
-                });\
-            };\
-            \
-            window.popupBridge.sendMessage = function sendMessage(message, data) {\
-                window.webkit.messageHandlers.%%SCRIPT_MESSAGE_HANDLER_NAME%%.postMessage({\
-                    message: {\
-                        name: message,\
-                        data: data\
-                    }\
-                });\
-            };\
-            \
-            return 0;\
-        })();";
+    ;(function () {\
+    if (!window.popupBridge) { window.popupBridge = {}; };\
+    \
+    window.popupBridge.getReturnUrlPrefix = function getReturnUrlPrefix() {\
+    return '%%SCHEME%%://%%HOST%%/';\
+    };\
+    \
+    window.popupBridge.open = function open(url) {\
+    window.webkit.messageHandlers.%%SCRIPT_MESSAGE_HANDLER_NAME%%.postMessage({\
+    url: url\
+    });\
+    };\
+    \
+    window.popupBridge.sendMessage = function sendMessage(message, data) {\
+    window.webkit.messageHandlers.%%SCRIPT_MESSAGE_HANDLER_NAME%%.postMessage({\
+    message: {\
+    name: message,\
+    data: data\
+    }\
+    });\
+    };\
+    \
+    return 0;\
+    })();";
 }
 
 #pragma mark - SFSafariViewControllerDelegate
@@ -103,6 +103,10 @@ NSString * const kPOPURLHost = @"popupbridgev1";
     }
 }
 
+-(void)destroy {
+    [self.webView.configuration.userContentController removeScriptMessageHandlerForName:kPOPScriptMessageHandlerName];
+}
+
 #pragma mark - WKScriptMessageHandler
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
@@ -111,27 +115,27 @@ NSString * const kPOPURLHost = @"popupbridgev1";
         NSString *urlString = params[@"url"];
         if (urlString) {
             [self dismissSafariViewController];
-
+            
             __weak POPPopupBridge *weakSelf = self;
             returnBlock = ^(NSURL *url) {
                 NSString *err = @"null";
                 NSString *payload = @"null";
-
+                
                 if (url) {
                     NSURLComponents *urlComponents = [[NSURLComponents alloc] initWithURL:url resolvingAgainstBaseURL:NO];
                     NSString *path = urlComponents.path;
-
+                    
                     if ([urlComponents.scheme localizedCaseInsensitiveCompare:scheme] != NSOrderedSame ||
                         [urlComponents.host localizedCaseInsensitiveCompare:kPOPURLHost] != NSOrderedSame) {
                         return NO;
                     }
-
+                    
                     [weakSelf dismissSafariViewController];
-
+                    
                     NSMutableDictionary *payloadDictionary = [NSMutableDictionary new];
                     payloadDictionary[@"path"] = path;
                     payloadDictionary[@"queryItems"] = [self.class dictionaryForQueryString:url.query];
-
+                    
                     NSError *error;
                     NSData *payloadData = [NSJSONSerialization dataWithJSONObject:payloadDictionary options:0 error:&error];
                     if (!payloadData) {
@@ -141,16 +145,16 @@ NSString * const kPOPURLHost = @"popupbridgev1";
                         payload = [[NSString alloc] initWithData:payloadData encoding:NSUTF8StringEncoding];
                     }
                 }
-
+                
                 [weakSelf.webView evaluateJavaScript:[NSString stringWithFormat:@"window.popupBridge.onComplete(%@, %@);", err, payload] completionHandler:^(id _Nullable result, NSError * _Nullable error) {
                     if (error) {
                         NSLog(@"Error: PopupBridge requires onComplete callback. Details: %@", error.description);
                     }
                 }];
-
+                
                 return YES;
             };
-
+            
             NSURL *url = [NSURL URLWithString:urlString];
             
             if ([self.delegate respondsToSelector:@selector(popupBridge:willOpenURL:)]) {
@@ -177,7 +181,7 @@ NSString * const kPOPURLHost = @"popupbridgev1";
         if ([keyValueString length] == 0) {
             continue;
         }
-
+        
         NSArray *keyValueArray = [keyValueString componentsSeparatedByString:@"="];
         NSString *key = [self percentDecodedStringForString:keyValueArray[0]];
         if (!key) {
@@ -199,3 +203,4 @@ NSString * const kPOPURLHost = @"popupbridgev1";
 
 @end
 #endif
+
