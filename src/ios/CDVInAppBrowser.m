@@ -513,10 +513,21 @@
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
         self.callbackId = nil;
     }
+    
+    [self.inAppBrowserViewController.popupBridge destroy];
+    self.inAppBrowserViewController.popupBridge = nil;
+    
+    [self.inAppBrowserViewController.configuration.userContentController removeScriptMessageHandlerForName:IAB_BRIDGE_NAME];
+    self.inAppBrowserViewController.configuration = nil;
+    
+    [self.inAppBrowserViewController.webView stopLoading];
+    [self.inAppBrowserViewController.webView removeFromSuperview];
+    [self.inAppBrowserViewController.webView setUIDelegate:nil];
+    [self.inAppBrowserViewController.webView setNavigationDelegate:nil];
+    self.inAppBrowserViewController.webView = nil;
+    
     // Set navigationDelegate to nil to ensure no callbacks are received from it.
     self.inAppBrowserViewController.navigationDelegate = nil;
-    // Don't recycle the ViewController since it may be consuming a lot of memory.
-    // Also - this is required for the PDF/User-Agent bug work-around.
     self.inAppBrowserViewController = nil;
     
     
