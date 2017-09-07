@@ -1,35 +1,31 @@
----
-title: Inappbrowser
-description: Open an in-app browser window.
----
-<!--
-# license: Licensed to the Apache Software Foundation (ASF) under one
-#         or more contributor license agreements.  See the NOTICE file
-#         distributed with this work for additional information
-#         regarding copyright ownership.  The ASF licenses this file
-#         to you under the Apache License, Version 2.0 (the
-#         "License"); you may not use this file except in compliance
-#         with the License.  You may obtain a copy of the License at
-#
-#           http://www.apache.org/licenses/LICENSE-2.0
-#
-#         Unless required by applicable law or agreed to in writing,
-#         software distributed under the License is distributed on an
-#         "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-#         KIND, either express or implied.  See the License for the
-#         specific language governing permissions and limitations
-#         under the License.
--->
+# cordova-plugin-inappbrowser-popup-bridge
 
-|Android 4.4|Android 5.1|Android 6.0|iOS 9.3|iOS 10.0|Windows 10 Store|Travis CI|
-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-|[![Build Status](http://cordova-ci.cloudapp.net:8080/buildStatus/icon?job=cordova-periodic-build/PLATFORM=android-4.4,PLUGIN=cordova-plugin-inappbrowser)](http://cordova-ci.cloudapp.net:8080/job/cordova-periodic-build/PLATFORM=android-4.4,PLUGIN=cordova-plugin-inappbrowser/)|[![Build Status](http://cordova-ci.cloudapp.net:8080/buildStatus/icon?job=cordova-periodic-build/PLATFORM=android-5.1,PLUGIN=cordova-plugin-inappbrowser)](http://cordova-ci.cloudapp.net:8080/job/cordova-periodic-build/PLATFORM=android-5.1,PLUGIN=cordova-plugin-inappbrowser/)|[![Build Status](http://cordova-ci.cloudapp.net:8080/buildStatus/icon?job=cordova-periodic-build/PLATFORM=android-6.0,PLUGIN=cordova-plugin-inappbrowser)](http://cordova-ci.cloudapp.net:8080/job/cordova-periodic-build/PLATFORM=android-6.0,PLUGIN=cordova-plugin-inappbrowser/)|[![Build Status](http://cordova-ci.cloudapp.net:8080/buildStatus/icon?job=cordova-periodic-build/PLATFORM=ios-9.3,PLUGIN=cordova-plugin-inappbrowser)](http://cordova-ci.cloudapp.net:8080/job/cordova-periodic-build/PLATFORM=ios-9.3,PLUGIN=cordova-plugin-inappbrowser/)|[![Build Status](http://cordova-ci.cloudapp.net:8080/buildStatus/icon?job=cordova-periodic-build/PLATFORM=ios-10.0,PLUGIN=cordova-plugin-inappbrowser)](http://cordova-ci.cloudapp.net:8080/job/cordova-periodic-build/PLATFORM=ios-10.0,PLUGIN=cordova-plugin-inappbrowser/)|[![Build Status](http://cordova-ci.cloudapp.net:8080/buildStatus/icon?job=cordova-periodic-build/PLATFORM=windows-10-store,PLUGIN=cordova-plugin-inappbrowser)](http://cordova-ci.cloudapp.net:8080/job/cordova-periodic-build/PLATFORM=windows-10-store,PLUGIN=cordova-plugin-inappbrowser/)|[![Build Status](https://travis-ci.org/apache/cordova-plugin-inappbrowser.svg?branch=master)](https://travis-ci.org/apache/cordova-plugin-inappbrowser)|
+`cordova-plugin-inappbrowser-popup-bridge` is a fork of [cordova-plugin-inappbrowser](https://github.com/apache/cordova-plugin-inappbrowser) which adds support for Braintree's PopupBridge libraries for [Android](https://github.com/braintree/popup-bridge-android) and [iOS](https://github.com/braintree/popup-bridge-ios) to support PayPal payments within the context of the InappBrowser element of a Cordova-based app.
 
-# cordova-plugin-inappbrowser
+The purpose of PopupBridge is to allow Webviews to open emulated popup windows in a browser and send data back to the parent page in the Webview. This is essential for Web-based PayPal checkout flows which use the [Braintree JS SDK](https://github.com/braintree/braintree-web) which supports popup emulation via PopupBridge.
 
-You can show helpful articles, videos, and web resources inside of your app. Users can view web pages without leaving your app.
+See the [example app project](https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge-test) which demonstrates usage of `cordova-plugin-inappbrowser-popup-bridge`.
 
-> To get a few ideas, check out the [sample](#sample) at the bottom of this page or go straight to the [reference](#reference) content.
+## Installation
+
+    cordova plugin add cordova-plugin-inappbrowser-popup-bridge
+    
+iOS:
+- PopupBridge requires the newer iOS [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview).
+- Therefore, this plugin depends on [cordova-plugin-wkwebview-engine](https://github.com/apache/cordova-plugin-wkwebview-engine) which adds WKWebView support to Cordova.
+- You need to add this manually: `cordova plugin add cordova-plugin-wkwebview-engine`
+- This means the main Cordova app Webview will also use WKWebView on iOS 9+.
+    
+# Supported platform versions
+- This plugin officially supports iOS 9.0+ and Android 4.4+
+    - These are the versions supported by PopupBridge
+- However, this plugin will compile on iOS 8.0+ and Android 4.1+ 
+    - When running on earlier versions on which PopupBridge is not supported, it is the responsibility of the app which uses this plugin how it should behave.
+    - For example, fall back to launching the system browser instead of in-app browser. This means the user is taken out of the original app to the default browser app, but at least can fulfill their PayPal payment before manually navigating back to the original app.
+
+# cordova-plugin-inappbrowser API docs
+
+**NOTE:** The `cordova-plugin-inappbrowser-popup-bridge` plugin API is identical to `cordova-plugin-inappbrowser`:
 
 This plugin provides a web browser view that displays when calling `cordova.InAppBrowser.open()`.
 
@@ -68,11 +64,6 @@ Although `window.open` is in the global scope, InAppBrowser is not available unt
 
 Report issues with this plugin on the [Apache Cordova issue tracker](https://issues.apache.org/jira/issues/?jql=project%20%3D%20CB%20AND%20status%20in%20%28Open%2C%20%22In%20Progress%22%2C%20Reopened%29%20AND%20resolution%20%3D%20Unresolved%20AND%20component%20%3D%20%22Plugin%20InAppBrowser%22%20ORDER%20BY%20priority%20DESC%2C%20summary%20ASC%2C%20updatedDate%20DESC)
 
-
-## <a id="reference">Reference</a>
-## Installation
-
-    cordova plugin add cordova-plugin-inappbrowser
 
 If you want all page loads in your app to go through the InAppBrowser, you can
 simply hook `window.open` during initialization.  For example:
@@ -133,79 +124,10 @@ instance, or the system browser.
     - __transitionstyle__: Set to `fliphorizontal`, `crossdissolve` or `coververtical` to set the [transition style](http://developer.apple.com/library/ios/#documentation/UIKit/Reference/UIViewController_Class/Reference/Reference.html#//apple_ref/occ/instp/UIViewController/modalTransitionStyle) (defaults to `coververtical`).
     - __toolbarposition__: Set to `top` or `bottom` (default is `bottom`). Causes the toolbar to be at the top or bottom of the window.
 
-    Windows only:
-
-    - __hidden__: set to `yes` to create the browser and load the page, but not show it. The loadstop event fires when loading is complete. Omit or set to `no` (default) to have the browser open and load normally.
-    - __fullscreen__: set to `yes` to create the browser control without a border around it. Please note that if __location=no__ is also specified, there will be no control presented to user to close IAB window.
-    - __hardwareback__: works the same way as on Android platform.
-
-### Supported Platforms
-
-- Amazon Fire OS
-- Android
-- BlackBerry 10
-- Firefox OS
-- iOS
-- OSX
-- Windows 8 and 8.1
-- Windows Phone 7 and 8
-- Browser
-
 ### Example
 
     var ref = cordova.InAppBrowser.open('http://apache.org', '_blank', 'location=yes');
     var ref2 = cordova.InAppBrowser.open(encodeURI('http://ja.m.wikipedia.org/wiki/ハングル'), '_blank', 'location=yes');
-
-### Firefox OS Quirks
-
-As plugin doesn't enforce any design there is a need to add some CSS rules if
-opened with `target='_blank'`. The rules might look like these
-
-``` css
-.inAppBrowserWrap {
-  background-color: rgba(0,0,0,0.75);
-  color: rgba(235,235,235,1.0);
-}
-.inAppBrowserWrap menu {
-  overflow: auto;
-  list-style-type: none;
-  padding-left: 0;
-}
-.inAppBrowserWrap menu li {
-  font-size: 25px;
-  height: 25px;
-  float: left;
-  margin: 0 10px;
-  padding: 3px 10px;
-  text-decoration: none;
-  color: #ccc;
-  display: block;
-  background: rgba(30,30,30,0.50);
-}
-.inAppBrowserWrap menu li.disabled {
-	color: #777;
-}
-```
-
-### OSX Quirks
-
-At the moment the only supported target in OSX is `_system`.
-
-`_blank` and `_self` targets are not yet implemented and are ignored silently. Pull requests and patches to get these to work are greatly appreciated.
-
-### Windows Quirks
-
-Windows 8.0, 8.1 and Windows Phone 8.1 don't support remote urls to be opened in the Cordova WebView so remote urls are always showed in the system's web browser if opened with `target='_self'`.
-
-On Windows 10 if the URL is NOT in the white list and is opened with `target='_self'` it will be showed in the system's web browser instead of InAppBrowser popup.
-
-Similar to Firefox OS IAB window visual behaviour can be overridden via `inAppBrowserWrap`/`inAppBrowserWrapFullscreen` CSS classes
-
-### Browser Quirks
-
-- Plugin is implemented via iframe,
-
-- Navigation history (`back` and `forward` buttons in LocationBar) is not implemented.
 
 ## InAppBrowser
 
@@ -318,16 +240,6 @@ function executeScriptCallBack(params) {
 
 - __message__: the error message, only in the case of `loaderror`. _(String)_
 
-
-### Supported Platforms
-
-- Amazon Fire OS
-- Android
-- iOS
-- Windows 8 and 8.1
-- Windows Phone 7 and 8
-- Browser
-
 ### Browser Quirks
 
 `loadstart` and `loaderror` events are not being fired.
@@ -355,15 +267,6 @@ function executeScriptCallBack(params) {
 - __callback__: the function to execute when the event fires.
 The function is passed an `InAppBrowserEvent` object.
 
-### Supported Platforms
-
-- Amazon Fire OS
-- Android
-- iOS
-- Windows 8 and 8.1
-- Windows Phone 7 and 8
-- Browser
-
 ### Quick Example
 
     var ref = cordova.InAppBrowser.open('http://apache.org', '_blank', 'location=yes');
@@ -379,16 +282,6 @@ The function is passed an `InAppBrowserEvent` object.
 
 - __ref__: reference to the `InAppBrowser` window _(InAppBrowser)_
 
-### Supported Platforms
-
-- Amazon Fire OS
-- Android
-- Firefox OS
-- iOS
-- Windows 8 and 8.1
-- Windows Phone 7 and 8
-- Browser
-
 ### Quick Example
 
     var ref = cordova.InAppBrowser.open('http://apache.org', '_blank', 'location=yes');
@@ -402,13 +295,6 @@ The function is passed an `InAppBrowserEvent` object.
 
 - __ref__: reference to the InAppBrowser window (`InAppBrowser`)
 
-### Supported Platforms
-
-- Amazon Fire OS
-- Android
-- iOS
-- Windows 8 and 8.1
-- Browser
 
 ### Quick Example
 
@@ -423,13 +309,6 @@ The function is passed an `InAppBrowserEvent` object.
     ref.hide();
 
 - __ref__: reference to the InAppBrowser window (`InAppBrowser`)
-
-### Supported Platforms
-
-- Amazon Fire OS
-- Android
-- iOS
-- Windows 8 and 8.1
 
 ### Quick Example
 
@@ -456,28 +335,12 @@ The function is passed an `InAppBrowserEvent` object.
       the return value of the last statement, or the last expression
       evaluated.
 
-### Supported Platforms
-
-- Amazon Fire OS
-- Android
-- iOS
-- Windows 8 and 8.1
-- Browser
-
 ### Quick Example
 
     var ref = cordova.InAppBrowser.open('http://apache.org', '_blank', 'location=yes');
     ref.addEventListener('loadstop', function() {
         ref.executeScript({file: "myscript.js"});
     });
-
-### Browser Quirks
-
-- only __code__ key is supported.
-
-### Windows Quirks
-
-Due to [MSDN docs](https://msdn.microsoft.com/en-us/library/windows.ui.xaml.controls.webview.invokescriptasync.aspx) the invoked script can return only string values, otherwise the parameter, passed to __callback__ will be `[null]`.
 
 ## InAppBrowser.insertCSS
 
@@ -492,13 +355,6 @@ Due to [MSDN docs](https://msdn.microsoft.com/en-us/library/windows.ui.xaml.cont
   - __code__: Text of the stylesheet to inject.
 
 - __callback__: the function that executes after the CSS is injected.
-
-### Supported Platforms
-
-- Amazon Fire OS
-- Android
-- iOS
-- Windows
 
 ### Quick Example
 
@@ -547,7 +403,7 @@ $('#help-select').on('change', function (e) {
 
         case "article":
             url = "https://cordova.apache.org/docs/en/latest/"
-                        + "reference/cordova-plugin-inappbrowser/index.html";
+                        + "reference/cordova-plugin-inappbrowser-popup-bridge/index.html";
             break;
 
         case "video":

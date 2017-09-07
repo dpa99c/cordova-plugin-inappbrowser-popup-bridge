@@ -1,29 +1,18 @@
 {
-  "name": "cordova-plugin-inappbrowser",
-  "version": "1.7.2-dev",
-  "description": "Cordova InAppBrowser Plugin",
+  "name": "cordova-plugin-inappbrowser-popup-bridge",
+  "version": "1.0.0",
+  "description": "Cordova InAppBrowser PopupBridge Plugin",
   "types": "./types/index.d.ts",
   "cordova": {
-    "id": "cordova-plugin-inappbrowser",
+    "id": "cordova-plugin-inappbrowser-popup-bridge",
     "platforms": [
       "android",
-      "amazon-fireos",
-      "ubuntu",
-      "ios",
-      "osx",
-      "wp7",
-      "wp8",
-      "windows8",
-      "windows",
-      "firefoxos"
+      "ios"
     ]
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/apache/cordova-plugin-inappbrowser"
-  },
-  "bugs": {
-    "url": "https://issues.apache.org/jira/browse/CB"
+    "url": "https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge"
   },
   "keywords": [
     "cordova",
@@ -33,20 +22,8 @@
     "inappbrowser",
     "ecosystem:cordova",
     "cordova-android",
-    "cordova-amazon-fireos",
-    "cordova-ubuntu",
     "cordova-ios",
-    "cordova-osx",
-    "cordova-wp7",
-    "cordova-wp8",
-    "cordova-windows8",
-    "cordova-windows",
-    "cordova-firefoxos"
   ],
-  "scripts": {
-    "test": "npm run jshint",
-    "jshint": "node node_modules/jshint/bin/jshint www && node node_modules/jshint/bin/jshint src && node node_modules/jshint/bin/jshint tests"
-  },
   "engines": {
     "cordovaDependencies": {
       "0.2.3": {
@@ -57,9 +34,6 @@
       }
     }
   },
-  "author": "Apache Software Foundation",
-  "license": "Apache-2.0",
-  "devDependencies": {
-    "jshint": "^2.6.0"
-  }
+  "author": "Dave Alden",
+  "license": "Apache-2.0"
 }
