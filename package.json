@@ -23,6 +23,8 @@
     "ecosystem:cordova",
     "cordova-android",
     "cordova-ios",
+    "paypal",
+    "braintree"
   ],
   "engines": {
     "cordovaDependencies": {

@@ -27,7 +27,7 @@
     <name>InAppBrowser with PopupBridge</name>
     <description>Cordova InAppBrowser PopupBridge Plugin</description>
     <license>Apache 2.0</license>
-    <keywords>cordova,in,app,browser,inappbrowser</keywords>
+    <keywords>cordova,in,app,browser,inappbrowser,paypal,braintree</keywords>
     <repo>"https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge.git</repo>
 
     <engines>
