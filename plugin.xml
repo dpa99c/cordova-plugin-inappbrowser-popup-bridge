@@ -21,15 +21,14 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        id="cordova-plugin-inappbrowser"
-        version="1.7.2-dev">
+        id="cordova-plugin-inappbrowser-popup-bridge"
+        version="1.0.0">
 
-    <name>InAppBrowser</name>
-    <description>Cordova InAppBrowser Plugin</description>
+    <name>InAppBrowser with PopupBridge</name>
+    <description>Cordova InAppBrowser PopupBridge Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,in,app,browser,inappbrowser</keywords>
-    <repo>https://git-wip-us.apache.org/repos/asf/cordova-plugin-inappbrowser.git</repo>
-    <issue>https://issues.apache.org/jira/browse/CB/component/12320641</issue>
+    <repo>"https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge.git</repo>
 
     <engines>
         <engine name="cordova" version=">=3.1.0" />
