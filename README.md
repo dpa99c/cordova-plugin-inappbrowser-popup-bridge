@@ -13,6 +13,7 @@ See the [example app project](https://github.com/dpa99c/cordova-plugin-inappbrow
 iOS:
 - PopupBridge requires the newer iOS [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview).
 - Therefore, this plugin depends on [cordova-plugin-wkwebview-engine](https://github.com/apache/cordova-plugin-wkwebview-engine) which adds WKWebView support to Cordova.
+    - This plugin is an extension of [cordova-plugin-inappbrowser-wkwebview](https://github.com/dpa99c/cordova-plugin-inappbrowser-wkwebview)
 - You need to add this manually: `cordova plugin add cordova-plugin-wkwebview-engine`
 - This means the main Cordova app Webview will also use WKWebView on iOS 9+.
     
