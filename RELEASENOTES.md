@@ -20,5 +20,8 @@
 -->
 # Release Notes
 
+### 1.0.1 (Sep 8, 2017)
+* Fix content sizing issue on iOS
+
 ### 1.0.0 (Sep 7, 2017)
 * Initial release
