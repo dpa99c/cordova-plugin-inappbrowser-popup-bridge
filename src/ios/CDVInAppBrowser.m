@@ -206,22 +206,17 @@
     
     [self.inAppBrowserViewController navigateTo:url];
     [self show:nil withNoAnimate:browserOptions.hidden];
-    if (browserOptions.hidden) {
-        self.inAppBrowserViewController.view.hidden = YES;
-    }
-    
 }
 
 - (void)show:(CDVInvokedUrlCommand*)command{
-    [self show:nil withNoAnimate:NO];
+    [self show:command withNoAnimate:NO];
 }
 
 - (void)show:(CDVInvokedUrlCommand*)command withNoAnimate:(BOOL)noAnimate
 {
-    BOOL wasHidden = self.inAppBrowserViewController.view.hidden;
-    if(wasHidden){
-        self.inAppBrowserViewController.view.hidden = NO;
-        noAnimate = YES;
+    BOOL initHidden = NO;
+    if(command == nil && noAnimate == YES){
+        initHidden = YES;
     }
     
     if (self.inAppBrowserViewController == nil) {
@@ -233,7 +228,9 @@
         return;
     }
     
-    _previousStatusBarStyle = [UIApplication sharedApplication].statusBarStyle;
+    if(!initHidden){
+        _previousStatusBarStyle = [UIApplication sharedApplication].statusBarStyle;
+    }
     
     __block CDVInAppBrowserNavigationController* nav = [[CDVInAppBrowserNavigationController alloc]
                                                         initWithRootViewController:self.inAppBrowserViewController];
@@ -246,7 +243,13 @@
     // Run later to avoid the "took a long time" log message.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (weakSelf.inAppBrowserViewController != nil) {
-            CGRect frame = [[UIScreen mainScreen] bounds];
+            CGRect frame;
+            if(initHidden){
+                frame = CGRectMake(0, 0, 0, 0);
+            }else{
+                frame = [[UIScreen mainScreen] bounds];
+            }
+            
             UIWindow *tmpWindow = [[UIWindow alloc] initWithFrame:frame];
             UIViewController *tmpController = [[UIViewController alloc] init];
             [tmpWindow setRootViewController:tmpController];
@@ -277,7 +280,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.inAppBrowserViewController != nil) {
             _previousStatusBarStyle = -1;
-            [self.viewController dismissViewControllerAnimated:YES completion:nil];
+            [self.inAppBrowserViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         }
     });
 }
