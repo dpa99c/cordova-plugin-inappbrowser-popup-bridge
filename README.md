@@ -22,6 +22,10 @@ iOS:
 - However, this plugin will compile on iOS 8.0+ and Android 4.1+ 
     - When running on earlier versions on which PopupBridge is not supported, it is the responsibility of the app which uses this plugin how it should behave.
     - For example, fall back to launching the system browser instead of in-app browser. This means the user is taken out of the original app to the default browser app, but at least can fulfill their PayPal payment before manually navigating back to the original app.
+    
+# Example app
+
+[cordova-plugin-inappbrowser-popup-bridge-test](https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge-test) contains a Cordova project which builds a test app for Android and iOS to illustrate usage of this plugin.
 
 # cordova-plugin-inappbrowser API docs
 
