@@ -335,7 +335,6 @@
     }
 }
 
-#pragma mark -
 
 //Synchronus helper for javascript evaluation
 
@@ -1000,10 +999,9 @@ BOOL isExiting = FALSE;
     [self.navigationDelegate didFinishNavigation:theWebView];
 }
 
-- (void)webView:(WKWebView*)theWebView didFailNavigation:(null_unspecified WKNavigation *)navigation withError:(nonnull NSError *)error
-{
+- (void)webView:(WKWebView*)theWebView failedNavigation:(NSString*) delegateName withError:(nonnull NSError *)error{
     // log fail message, stop spinner, update back/forward
-    NSLog(@"webView:didFailNavigation - %ld: %@", (long)error.code, [error localizedDescription]);
+    NSLog(@"webView:%@ - %ld: %@", delegateName, (long)error.code, [error localizedDescription]);
     
     self.backButton.enabled = theWebView.canGoBack;
     self.forwardButton.enabled = theWebView.canGoForward;
@@ -1012,6 +1010,16 @@ BOOL isExiting = FALSE;
     self.addressLabel.text = NSLocalizedString(@"Load Error", nil);
     
     [self.navigationDelegate webView:theWebView didFailNavigation:error];
+}
+
+- (void)webView:(WKWebView*)theWebView didFailNavigation:(null_unspecified WKNavigation *)navigation withError:(nonnull NSError *)error
+{
+    [self webView:theWebView failedNavigation:@"didFailNavigation" withError:error];
+}
+    
+- (void)webView:(WKWebView*)theWebView didFailProvisionalNavigation:(null_unspecified WKNavigation *)navigation withError:(nonnull NSError *)error
+{
+    [self webView:theWebView failedNavigation:@"didFailProvisionalNavigation" withError:error];
 }
 
 #pragma mark WKScriptMessageHandler delegate
