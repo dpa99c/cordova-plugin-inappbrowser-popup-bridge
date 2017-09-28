@@ -243,11 +243,9 @@
     // Run later to avoid the "took a long time" log message.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (weakSelf.inAppBrowserViewController != nil) {
-            CGRect frame;
+            CGRect frame = [[UIScreen mainScreen] bounds];
             if(initHidden){
-                frame = CGRectMake(0, 0, 0, 0);
-            }else{
-                frame = [[UIScreen mainScreen] bounds];
+                frame.origin.x = -10000;
             }
             
             UIWindow *tmpWindow = [[UIWindow alloc] initWithFrame:frame];
@@ -909,6 +907,10 @@ BOOL isExiting = FALSE;
 {
     if (IsAtLeastiOSVersion(@"7.0") && !viewRenderedAtLeastOnce) {
         viewRenderedAtLeastOnce = TRUE;
+        CGRect viewBounds = [self.webView bounds];
+        viewBounds.origin.y = STATUSBAR_HEIGHT;
+        viewBounds.size.height = viewBounds.size.height - STATUSBAR_HEIGHT;
+        self.webView.frame = viewBounds;
         [[UIApplication sharedApplication] setStatusBarStyle:[self preferredStatusBarStyle]];
         
     }
