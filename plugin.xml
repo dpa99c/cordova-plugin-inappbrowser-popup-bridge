@@ -22,7 +22,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         id="cordova-plugin-inappbrowser-popup-bridge"
-        version="0.9.0">
+        version="0.9.1">
 
     <name>InAppBrowser with PopupBridge</name>
     <description>Cordova InAppBrowser PopupBridge Plugin</description>
