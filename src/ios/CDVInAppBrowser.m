@@ -559,12 +559,8 @@ BOOL isExiting = FALSE;
         _userAgent = userAgent;
         _prevUserAgent = prevUserAgent;
         _browserOptions = browserOptions;
-#ifdef __CORDOVA_4_0_0
-        _webViewDelegate = [[CDVWKWebViewUIDelegate alloc] initWithTitle:@"cordova"];
-        //_webViewDelegate = [[CDVUIWebViewDelegate alloc] initWithDelegate:self];
-#else
-        _webViewDelegate = [[CDVWebViewDelegate alloc] initWithDelegate:self];
-#endif
+        self.webViewUIDelegate = [[CDVInAppBrowserUIDelegate alloc] initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
+        [self.webViewUIDelegate setViewController:self];
         
         [self createViews];
     }
@@ -592,15 +588,13 @@ BOOL isExiting = FALSE;
     
     
     self.webView = [[WKWebView alloc] initWithFrame:webViewBounds configuration:configuration];
-    CDVWKWebViewUIDelegate* webViewUIDelegate = [[CDVWKWebViewUIDelegate alloc] initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
-    ((WKWebView*)self.webView).UIDelegate = webViewUIDelegate;
     
     [self.view addSubview:self.webView];
     [self.view sendSubviewToBack:self.webView];
     
     
     self.webView.navigationDelegate = self;
-    self.webView.UIDelegate = self;
+    self.webView.UIDelegate = self.webViewUIDelegate;
     self.popupBridge = [[POPPopupBridge alloc] initWithWebView:self.webView delegate:self];
     
     self.webView.backgroundColor = [UIColor whiteColor];

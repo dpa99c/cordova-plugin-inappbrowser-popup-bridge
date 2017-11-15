@@ -20,6 +20,13 @@
 -->
 # Release Notes
 
+### 1.0.3 (Nov 15, 2017)
+* Fix built-in JS dialogs (alert, confirm, prompt) on iOS
+
+### 1.0.2 (Sep 28, 2017)
+* Fix handling of load errors caused by failed navigation
+* Fix content sizing bug caused by 4573c87d0b74c087ef35e40f4311674bc92e7947
+
 ### 1.0.1 (Sep 8, 2017)
 * Fix content sizing issue on iOS
 
