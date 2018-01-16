@@ -20,6 +20,15 @@
 -->
 # Release Notes
 
+### 1.0.6 (Jan 16, 2018)
+* Fix iOS 11 bug where opening IAB as hidden causes native pickers in main Cordova WKWebView to misbehave.
+
+### 1.0.5 (Dec 12, 2017)
+* Ensure IAB dialog is not null before attempting to show/hide. Prevents native crash if show() or hide() is called twice concurrently.
+
+### 1.0.4 (Nov 17, 2017)
+* Disable 3D touch link preview and gesture navigation.
+
 ### 1.0.3 (Nov 15, 2017)
 * Fix built-in JS dialogs (alert, confirm, prompt) on iOS
 
