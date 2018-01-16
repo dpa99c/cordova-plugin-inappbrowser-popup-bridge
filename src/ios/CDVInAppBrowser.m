@@ -244,16 +244,16 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         if (weakSelf.inAppBrowserViewController != nil) {
             CGRect frame = [[UIScreen mainScreen] bounds];
-            if(initHidden){
-                frame.origin.x = -10000;
-            }
             
             UIWindow *tmpWindow = [[UIWindow alloc] initWithFrame:frame];
             UIViewController *tmpController = [[UIViewController alloc] init];
             [tmpWindow setRootViewController:tmpController];
             [tmpWindow setWindowLevel:UIWindowLevelNormal];
             
-            [tmpWindow makeKeyAndVisible];
+            if(!initHidden){
+                [tmpWindow makeKeyAndVisible];
+            }
+            
             [tmpController presentViewController:nav animated:!noAnimate completion:nil];
         }
     });
@@ -1014,7 +1014,6 @@ BOOL isExiting = FALSE;
 {
     [self webView:theWebView failedNavigation:@"didFailNavigation" withError:error];
 }
-    
 - (void)webView:(WKWebView*)theWebView didFailProvisionalNavigation:(null_unspecified WKNavigation *)navigation withError:(nonnull NSError *)error
 {
     [self webView:theWebView failedNavigation:@"didFailProvisionalNavigation" withError:error];
