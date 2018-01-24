@@ -206,17 +206,21 @@
     
     [self.inAppBrowserViewController navigateTo:url];
     [self show:nil withNoAnimate:browserOptions.hidden];
+    if (browserOptions.hidden) {
+        self.inAppBrowserViewController.view.hidden = YES;
+    }
 }
 
 - (void)show:(CDVInvokedUrlCommand*)command{
-    [self show:command withNoAnimate:NO];
+    [self show:nil withNoAnimate:NO];
 }
 
 - (void)show:(CDVInvokedUrlCommand*)command withNoAnimate:(BOOL)noAnimate
 {
-    BOOL initHidden = NO;
-    if(command == nil && noAnimate == YES){
-        initHidden = YES;
+    BOOL wasHidden = self.inAppBrowserViewController.view.hidden;
+    if(wasHidden){
+        self.inAppBrowserViewController.view.hidden = NO;
+        noAnimate = YES;
     }
     
     if (self.inAppBrowserViewController == nil) {
@@ -228,9 +232,9 @@
         return;
     }
     
-    if(!initHidden){
+    
         _previousStatusBarStyle = [UIApplication sharedApplication].statusBarStyle;
-    }
+    
     
     __block CDVInAppBrowserNavigationController* nav = [[CDVInAppBrowserNavigationController alloc]
                                                         initWithRootViewController:self.inAppBrowserViewController];
@@ -243,21 +247,15 @@
     // Run later to avoid the "took a long time" log message.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (weakSelf.inAppBrowserViewController != nil) {
-            float osVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
             
             CGRect frame = [[UIScreen mainScreen] bounds];
-            if(initHidden && osVersion < 11){
-                frame.origin.x = -10000;
-            }
             
             UIWindow *tmpWindow = [[UIWindow alloc] initWithFrame:frame];
             UIViewController *tmpController = [[UIViewController alloc] init];
             [tmpWindow setRootViewController:tmpController];
             [tmpWindow setWindowLevel:UIWindowLevelNormal];
             
-            if(!initHidden || osVersion < 11){
-                [tmpWindow makeKeyAndVisible];
-            }
+            [tmpWindow makeKeyAndVisible];
             
             [tmpController presentViewController:nav animated:!noAnimate completion:nil];
         }
