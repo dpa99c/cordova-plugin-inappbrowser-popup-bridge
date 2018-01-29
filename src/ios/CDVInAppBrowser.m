@@ -481,6 +481,7 @@
 
 - (void)didStartProvisionalNavigation:(WKWebView*)theWebView
 {
+    NSString* url = [theWebView.URL absoluteString];
 }
 
 - (void)didFinishNavigation:(WKWebView*)theWebView
@@ -501,7 +502,10 @@
 - (void)webView:(WKWebView*)theWebView didFailNavigation:(NSError*)error
 {
     if (self.callbackId != nil) {
-        NSString* url = [self.inAppBrowserViewController.currentURL absoluteString];
+        NSString* url = [theWebView.URL absoluteString];
+        if(url == nil){
+            url = @"";
+        }
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
                                                       messageAsDictionary:@{@"type":@"loaderror", @"url":url, @"code": [NSNumber numberWithInteger:error.code], @"message": error.localizedDescription}];
         [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
