@@ -20,6 +20,9 @@
 -->
 # Release Notes
 
+### 1.0.10 (Jan 30, 2018)
+Enable posting of messages from IAB Webview to Cordova Webview on Android and iOS
+
 ### 1.0.9 (Jan 30, 2018)
 Bug fix for iOS crash when current IAB URL is nil
 
