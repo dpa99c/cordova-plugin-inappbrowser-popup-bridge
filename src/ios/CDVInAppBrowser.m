@@ -459,23 +459,45 @@
 - (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message {
     
     CDVPluginResult* pluginResult = nil;
+    BOOL keepCallback = NO;
+    NSString* scriptCallbackId = nil;
     
-    NSDictionary* messageContent = (NSDictionary*) message.body;
-    NSString* scriptCallbackId = messageContent[@"id"];
-    
-    if([messageContent objectForKey:@"d"]){
-        NSString* scriptResult = messageContent[@"d"];
+    NSDictionary* messageContent;
+    if([message.body isKindOfClass:[NSDictionary class]]){
+        messageContent = (NSDictionary*) message.body;
+    }else{
         NSError* __autoreleasing error = nil;
-        NSData* decodedResult = [NSJSONSerialization JSONObjectWithData:[scriptResult dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
-        if ((error == nil) && [decodedResult isKindOfClass:[NSArray class]]) {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:(NSArray*)decodedResult];
+        NSData* decodedResult = [NSJSONSerialization JSONObjectWithData:[message.body dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+        if (error == nil) {
+            messageContent = (NSDictionary*) decodedResult;
         } else {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_JSON_EXCEPTION];
         }
+    }
+    if(pluginResult != nil){
+        scriptCallbackId = self.callbackId;
+    } else if([messageContent objectForKey:@"id"]){
+        scriptCallbackId = messageContent[@"id"];
+        if([messageContent objectForKey:@"d"]){
+            NSString* scriptResult = messageContent[@"d"];
+            NSError* __autoreleasing error = nil;
+            NSData* decodedResult = [NSJSONSerialization JSONObjectWithData:[scriptResult dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+            if ((error == nil) && [decodedResult isKindOfClass:[NSArray class]]) {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:(NSArray*)decodedResult];
+            } else {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_JSON_EXCEPTION];
+            }
+        } else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:@[]];
+        }
     } else {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:@[]];
+        scriptCallbackId = self.callbackId;
+        keepCallback = YES;
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                     messageAsDictionary:@{@"type":@"message", @"data":messageContent}];
     }
     
+    [pluginResult setKeepCallback:[NSNumber numberWithBool:keepCallback]];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:scriptCallbackId];
 }
 

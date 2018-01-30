@@ -41,6 +41,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.HttpAuthHandler;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -86,6 +87,7 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String LOAD_START_EVENT = "loadstart";
     private static final String LOAD_STOP_EVENT = "loadstop";
     private static final String LOAD_ERROR_EVENT = "loaderror";
+    private static final String MESSAGE_EVENT = "message";
     private static final String CLEAR_ALL_CACHE = "clearcache";
     private static final String CLEAR_SESSION_CACHE = "clearsessioncache";
     private static final String HARDWARE_BACK_BUTTON = "hardwareback";
@@ -803,6 +805,23 @@ public class InAppBrowser extends CordovaPlugin {
                 if (appendUserAgent != null) {
                     settings.setUserAgentString(settings.getUserAgentString() + appendUserAgent);
                 }
+                // Add JS interface
+                class JsObject {
+                    @JavascriptInterface
+                    public void postMessage(String data) {
+                        try {
+                            JSONObject obj = new JSONObject();
+                            obj.put("type", MESSAGE_EVENT);
+                            obj.put("data", new JSONObject(data));
+                            sendUpdate(obj, true);
+                        } catch (JSONException ex) {
+                            LOG.e(LOG_TAG, "data object passed to postMessage has caused a JSON error.");
+                        }
+                    }
+                }
+                if (Build.VERSION.SDK_INT >= 17){
+                    inAppWebView.addJavascriptInterface(new JsObject(), "cordova_iab");
+                }
 
                 //Toggle whether this is enabled or not!
                 Bundle appSettings = cordova.getActivity().getIntent().getExtras();
@@ -1060,6 +1079,11 @@ public class InAppBrowser extends CordovaPlugin {
             // https://issues.apache.org/jira/browse/CB-11248
             view.clearFocus();
             view.requestFocus();
+
+            // Alias the iOS webkit namespace for postMessage()
+            if (Build.VERSION.SDK_INT >= 17){
+                injectDeferredObject("window.webkit={messageHandlers:{cordova_iab:cordova_iab}}", null);
+            }
 
             try {
                 JSONObject obj = new JSONObject();
