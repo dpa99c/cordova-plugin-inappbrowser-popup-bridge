@@ -20,6 +20,9 @@
 -->
 # Release Notes
 
+### 1.0.9 (Jan 30, 2018)
+Bug fix for iOS crash when current IAB URL is nil
+
 ### 1.0.8 (Jan 24, 2018)
 - Fix for the previous hiding strategy which caused JS errors in target pages on iOS 11 due to loading the target page while WKWebView instance was in a detached state.
 - This strategy has been tested and should work on iOS 9/10/11
