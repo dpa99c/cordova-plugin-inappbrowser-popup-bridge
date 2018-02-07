@@ -1,22 +1,37 @@
-<!--
-Please make sure the checklist boxes are all checked before submitting the PR. The checklist
-is intended as a quick reference, for complete details please see our Contributor Guidelines:
+## PR Type
+What kind of change does this PR introduce?
 
-http://cordova.apache.org/contribute/contribute_guidelines.html
+<!-- Please check the one that applies to this PR using "x". -->
+- [ ] Bugfix
+- [ ] Feature
+- [ ] Code style update (formatting, local variables)
+- [ ] Refactoring (no functional changes, no api changes)
+- [ ] Documentation  changes
+- [ ] Other... Please describe:
 
-Thanks!
--->
+<!-- Fill out the relevant sections below and delete irrelevant sections. -->
 
-### Platforms affected
+## PR Checklist
+For bug fixes / features, please check if your PR fulfills the following requirements:
 
+- [ ] Testing has been carried out for the changes have been added
+- [ ] Regression testing has been carried out for existing functionality
+- [ ] Docs have been added / updated
 
-### What does this PR do?
+## What is the purpose of this PR?
+<!-- Describe any current behavior that you are modifying, or link to a relevant issue. -->
+<!-- Describe the new behaviour added/modified and its purpose. -->
 
+## Does this PR introduce a breaking change?
+- [ ] Yes
+- [ ] No
 
-### What testing has been done on this change?
+<!-- If this PR contains a breaking change, please describe the impact and migration path for existing plugin versions. -->
 
+## What testing has been done on the changes in the PR?
+<!-- e.g. if an example project exists for this plugin, has it been updated to test the new functionality? -->
 
-### Checklist
-- [ ] [Reported an issue](http://cordova.apache.org/contribute/issues.html) in the JIRA database
-- [ ] Commit message follows the format: "CB-3232: (android) Fix bug with resolving file paths", where CB-xxxx is the JIRA ID & "android" is the platform affected.
-- [ ] Added automated test coverage as appropriate for this change.
+## What testing has been done on existing functionality?
+<!-- e.g. if an example project exists for this plugin, has been it been tested to ensure no regression bugs have been introduced? -->
+
+## Other information
