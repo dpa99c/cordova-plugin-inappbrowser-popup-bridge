@@ -19,7 +19,7 @@ module.exports = function (context) {
     if(!fs.existsSync(manifestPath)) {
         //AndroidManifest is now under app directory
         platformRoot = path.join(projectRoot, 'platforms/android/app/src/main');
-        console.log(platformRoot);
+        // console.log(platformRoot);
         manifestPath = path.join(platformRoot, 'AndroidManifest.xml');
     }
 
