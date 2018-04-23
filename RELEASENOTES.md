@@ -20,6 +20,9 @@
 -->
 # Release Notes
 
+### 1.0.11 (Apr 23, 2018)
+Add support for `cordova-android@7`
+
 ### 1.0.10 (Jan 30, 2018)
 Enable posting of messages from IAB Webview to Cordova Webview on Android and iOS
 
