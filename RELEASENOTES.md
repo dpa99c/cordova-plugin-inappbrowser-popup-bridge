@@ -20,6 +20,9 @@
 -->
 # Release Notes
 
+### 1.0.13 (Jun 29, 2018)
+Fix previous release issue
+
 ### 1.0.12 (Jun 29, 2018)
 Prevent native iOS crashes when evaluating Javascript
 
