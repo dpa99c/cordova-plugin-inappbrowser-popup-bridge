@@ -28,6 +28,7 @@
 @interface CDVInAppBrowser : CDVPlugin {
 }
 
+typedef void(^JsSuccessBlock)(NSString* result);
 @property (nonatomic, retain) CDVInAppBrowserViewController* inAppBrowserViewController;
 @property (nonatomic, copy) NSString* callbackId;
 @property (nonatomic, copy) NSRegularExpression *callbackIdPattern;

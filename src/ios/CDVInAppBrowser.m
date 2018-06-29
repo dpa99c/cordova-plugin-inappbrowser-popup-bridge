@@ -320,48 +320,54 @@
 
 - (void)injectDeferredObject:(NSString*)source withWrapper:(NSString*)jsWrapper
 {
-    // Ensure a message handler bridge is created to communicate with the CDVInAppBrowserViewController
-    [self evaluateJavaScript: [NSString stringWithFormat:@"(function(w){if(!w._cdvMessageHandler) {w._cdvMessageHandler = function(id,d){w.webkit.messageHandlers.%@.postMessage({d:d, id:id});}}})(window)", IAB_BRIDGE_NAME]];
+    __block NSString* _source = source;
+    __block NSString* _jsWrapper = jsWrapper;
     
-    if (jsWrapper != nil) {
-        NSData* jsonData = [NSJSONSerialization dataWithJSONObject:@[source] options:0 error:nil];
-        NSString* sourceArrayString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        if (sourceArrayString) {
-            NSString* sourceString = [sourceArrayString substringWithRange:NSMakeRange(1, [sourceArrayString length] - 2)];
-            NSString* jsToInject = [NSString stringWithFormat:jsWrapper, sourceString];
-            [self evaluateJavaScript:jsToInject];
-        }
-    } else {
-        [self evaluateJavaScript:source];
-    }
+    // Ensure a message handler bridge is created to communicate with the CDVInAppBrowserViewController
+    [self evaluateJavaScript: [NSString stringWithFormat:@"(function(w){if(!w._cdvMessageHandler) {w._cdvMessageHandler = function(id,d){w.webkit.messageHandlers.%@.postMessage({d:d, id:id});}}})(window)", IAB_BRIDGE_NAME]
+        completion:^(NSString* result){
+            if (_jsWrapper != nil) {
+                NSData* jsonData = [NSJSONSerialization dataWithJSONObject:@[_source] options:0 error:nil];
+                NSString* sourceArrayString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                if (sourceArrayString) {
+                    NSString* sourceString = [sourceArrayString substringWithRange:NSMakeRange(1, [sourceArrayString length] - 2)];
+                    NSString* jsToInject = [NSString stringWithFormat:_jsWrapper, sourceString];
+                    [self evaluateJavaScript:jsToInject completion:^(NSString* result){}];
+                }
+            } else {
+                [self evaluateJavaScript:_source completion:^(NSString* result){}];
+            }
+        }];
+    
 }
 
-
-//Synchronus helper for javascript evaluation
-
-- (NSString *)evaluateJavaScript:(NSString *)script {
-    __block NSString *resultString = nil;
-    __block BOOL finished = NO;
+//asynchronus helper for javascript evaluation
+- (void)evaluateJavaScript:(NSString *)script 
+                             completion:(JsSuccessBlock)completion
+{
     __block NSString* _script = script;
-    
-    [self.inAppBrowserViewController.webView evaluateJavaScript:script completionHandler:^(id result, NSError *error) {
-        if (error == nil) {
-            if (result != nil) {
-                resultString = result;
-                NSLog(@"%@", resultString);
-            }
-        } else {
-            NSLog(@"evaluateJavaScript error : %@ : %@", error.localizedDescription, _script);
+    __block JsSuccessBlock _completion = completion;
+
+    // The WKWebView requires JS evaluation to occur on the main
+    // thread starting with iOS11, so ensure that we dispatch to it before executing.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @try {
+            [self.inAppBrowserViewController.webView evaluateJavaScript:script completionHandler:^(id result, NSError *error) {
+                NSString* resultString = nil;
+                if (error == nil) {
+                    if (result != nil) {
+                        resultString = result;
+                        NSLog(@"%@", resultString);
+                    }
+                } else {
+                    NSLog(@"evaluateJavaScript error : %@ : %@", error.localizedDescription, _script);
+                }
+                _completion(resultString);
+            }];
+        }@catch (NSException* exception) {
+            NSLog(@"evaluateJavaScript exception : %@ : %@", exception.reason, _script);
         }
-        finished = YES;
-    }];
-    
-    while (!finished)
-    {
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
-    }
-    
-    return resultString;
+    });
 }
 
 - (void)injectScriptCode:(CDVInvokedUrlCommand*)command
