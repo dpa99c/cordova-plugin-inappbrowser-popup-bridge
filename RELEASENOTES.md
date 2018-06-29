@@ -20,6 +20,9 @@
 -->
 # Release Notes
 
+### 1.0.12 (Jun 29, 2018)
+Prevent native iOS crashes when evaluating Javascript
+
 ### 1.0.11 (Apr 23, 2018)
 Add support for `cordova-android@7`
 
