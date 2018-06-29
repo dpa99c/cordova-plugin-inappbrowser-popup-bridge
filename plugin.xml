@@ -22,7 +22,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         id="cordova-plugin-inappbrowser-popup-bridge"
-        version="1.0.10">
+        version="1.0.11">
 
     <name>InAppBrowser with PopupBridge</name>
     <description>Cordova InAppBrowser PopupBridge Plugin</description>
@@ -40,11 +40,16 @@
             <clobbers target="cordova.InAppBrowser.open" />
             <clobbers target="window.open" />
         </js-module>
+
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="InAppBrowser">
                 <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser"/>
             </feature>
         </config-file>
+
+        <edit-config file="AndroidManifest.xml" target="/manifest" mode="merge">
+    		<manifest xmlns:tools="http://schemas.android.com/tools" />
+		</edit-config>
 
         <source-file src="src/android/InAppBrowser.java" target-dir="src/org/apache/cordova/inappbrowser" />
         <source-file src="src/android/InAppBrowserDialog.java" target-dir="src/org/apache/cordova/inappbrowser" />
