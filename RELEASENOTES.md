@@ -20,6 +20,9 @@
 -->
 # Release Notes
 
+### 1.0.15 (Jul 23, 2018)
+Guard against native Android crash when closing dialog
+
 ### 1.0.14 (Jul 23, 2018)
 Fix reported edge-case native Android crashes arising from this plugin
 
