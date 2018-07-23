@@ -737,7 +737,9 @@ public class InAppBrowser extends CordovaPlugin {
                 // WebView
                 inAppWebView = new WebView(cordova.getActivity());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    mPopupBridge = PopupBridge.newInstance(cordova.getActivity(), inAppWebView);
+                    try{
+                        mPopupBridge = PopupBridge.newInstance(cordova.getActivity(), inAppWebView);
+                    }catch (Exception e){} //swallow exception
                 }
                 inAppWebView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 inAppWebView.setId(Integer.valueOf(6));
