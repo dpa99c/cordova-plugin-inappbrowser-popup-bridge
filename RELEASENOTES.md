@@ -20,6 +20,9 @@
 -->
 # Release Notes
 
+### 1.0.14 (Jul 23, 2018)
+Fix reported edge-case native Android crashes arising from this plugin
+
 ### 1.0.13 (Jun 29, 2018)
 Fix previous release issue
 
