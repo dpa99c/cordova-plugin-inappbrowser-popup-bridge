@@ -20,6 +20,9 @@
 -->
 # Release Notes
 
+### 1.0.16 (Aug 10, 2018)
+For Android, remove `<edit-config>` block which adds tools namespace since that's being added by update_manifest.js anyway, and since `<edit-config>` seems problematic.
+
 ### 1.0.15 (Jul 23, 2018)
 Guard against native Android crash when closing dialog
 
