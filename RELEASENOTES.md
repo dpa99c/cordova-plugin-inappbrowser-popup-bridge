@@ -20,6 +20,9 @@
 -->
 # Release Notes
 
+### 1.0.17 (Aug 21, 2018)
+Port across WKWebView browser options from cordova-plugin-inappbrowser-wkwebview
+
 ### 1.0.16 (Aug 10, 2018)
 For Android, remove `<edit-config>` block which adds tools namespace since that's being added by update_manifest.js anyway, and since `<edit-config>` seems problematic.
 
