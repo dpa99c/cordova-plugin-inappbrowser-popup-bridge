@@ -46,9 +46,15 @@ typedef void(^JsSuccessBlock)(NSString* result);
 @property (nonatomic, assign) BOOL location;
 @property (nonatomic, assign) BOOL toolbar;
 @property (nonatomic, copy) NSString* closebuttoncaption;
+@property (nonatomic, copy) NSString* closebuttoncolor;
 @property (nonatomic, copy) NSString* toolbarposition;
+@property (nonatomic, copy) NSString* toolbarcolor;
+@property (nonatomic, assign) BOOL toolbartranslucent;
+@property (nonatomic, assign) BOOL hidenavigationbuttons;
+@property (nonatomic, copy) NSString* navigationbuttoncolor;
 @property (nonatomic, assign) BOOL clearcache;
 @property (nonatomic, assign) BOOL clearsessioncache;
+@property (nonatomic, assign) BOOL hidespinner;
 
 @property (nonatomic, copy) NSString* presentationstyle;
 @property (nonatomic, copy) NSString* transitionstyle;
@@ -93,7 +99,7 @@ typedef void(^JsSuccessBlock)(NSString* result);
 - (void)navigateTo:(NSURL*)url;
 - (void)showLocationBar:(BOOL)show;
 - (void)showToolBar:(BOOL)show : (NSString *) toolbarPosition;
-- (void)setCloseButtonTitle:(NSString*)title;
+- (void)setCloseButtonTitle:(NSString*)title : (NSString*) colorString;
 
 - (id)initWithUserAgent:(NSString*)userAgent prevUserAgent:(NSString*)prevUserAgent browserOptions: (CDVInAppBrowserOptions*) browserOptions;
 
