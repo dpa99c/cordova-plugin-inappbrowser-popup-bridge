@@ -20,6 +20,9 @@
 -->
 # Release Notes
 
+### 1.0.18 (Feb 8, 2019)
+Fix statusbar height on iPhone X family
+
 ### 1.0.17 (Aug 21, 2018)
 Port across WKWebView browser options from cordova-plugin-inappbrowser-wkwebview
 
