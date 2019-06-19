@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 var fs = require('fs'),
-    path = require('path');
+    path = require('path'),
+    q = require('q');
 
 module.exports = function (context) {
-    var deferral = context.requireCordovaModule('q').defer();
+    var deferral = q.defer();
 
     var toolsAttribute = "xmlns:tools=\"http://schemas.android.com/tools\"";
     var manifestOpen = "<manifest";
