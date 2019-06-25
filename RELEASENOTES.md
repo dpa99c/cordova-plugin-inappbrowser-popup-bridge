@@ -19,6 +19,8 @@
 #
 -->
 # Release Notes
+### 1.0.20 (Jun 25, 2019)
+Update legacy Xpath reference to `<application>` element in AndroidManifest.xml so it works with `cordova-android@8`.
 
 ### 1.0.19 (Jun 19, 2019)
 Fix hook scripts to be compatible with `cordova@9` CLI.
