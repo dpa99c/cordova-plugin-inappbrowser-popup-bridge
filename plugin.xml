@@ -76,7 +76,7 @@
 
         <hook type="after_prepare" src="src/android/update_manifest.js" />
 
-        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+        <config-file target="AndroidManifest.xml" parent="application">
             <activity android:name="com.braintreepayments.popupbridge.PopupBridgeActivity"
                       android:launchMode="singleTask">
                 <intent-filter>
