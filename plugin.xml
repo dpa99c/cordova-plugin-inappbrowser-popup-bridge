@@ -22,7 +22,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         id="cordova-plugin-inappbrowser-popup-bridge"
-        version="1.0.20">
+        version="1.0.21">
 
     <name>InAppBrowser with PopupBridge</name>
     <description>Cordova InAppBrowser PopupBridge Plugin</description>
@@ -107,6 +107,11 @@
         <source-file src="src/ios/CDVInAppBrowser.m" />
         <header-file src="src/ios/CDVInAppBrowserUIDelegate.h" />
         <source-file src="src/ios/CDVInAppBrowserUIDelegate.m" />
+        <header-file src="src/ios/CDVInAppBrowserNavigationController.h" />
+        <source-file src="src/ios/CDVInAppBrowserNavigationController.m" />
+        <header-file src="src/ios/CDVInAppBrowserOptions.h" />
+        <source-file src="src/ios/CDVInAppBrowserOptions.m" />
+
 
         <framework src="CoreGraphics.framework" />
 
@@ -116,6 +121,8 @@
 
         <header-file src="src/ios/POPPopUpBridge.h" />
         <source-file src="src/ios/POPPopUpBridge.m" />
+        <header-file src="src/ios/POPWeakScriptMessageDelegate.h" />
+        <source-file src="src/ios/POPWeakScriptMessageDelegate.m" />
 
         <config-file target="*-Info.plist" parent="CFBundleURLTypes">
             <array>

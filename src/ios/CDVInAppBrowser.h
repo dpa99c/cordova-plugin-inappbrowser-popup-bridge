@@ -20,54 +20,33 @@
 #import <Cordova/CDVPlugin.h>
 #import <Cordova/CDVInvokedUrlCommand.h>
 #import <Cordova/CDVScreenOrientationDelegate.h>
-#import "POPPopupBridge.h"
 #import "CDVInAppBrowserUIDelegate.h"
+#import "CDVInAppBrowserOptions.h"
+#import "CDVInAppBrowserNavigationController.h"
+#import "POPPopUpBridge.h"
 
 @class CDVInAppBrowserViewController;
 
 @interface CDVInAppBrowser : CDVPlugin {
+    UIWindow * tmpWindow;
+
+    @private
+    NSString* _beforeload;
+    BOOL _waitForBeforeload;
 }
 
-typedef void(^JsSuccessBlock)(NSString* result);
+@property (nonatomic, retain) CDVInAppBrowser* instance;
 @property (nonatomic, retain) CDVInAppBrowserViewController* inAppBrowserViewController;
 @property (nonatomic, copy) NSString* callbackId;
 @property (nonatomic, copy) NSRegularExpression *callbackIdPattern;
 
++ (id) getInstance;
 - (void)open:(CDVInvokedUrlCommand*)command;
 - (void)close:(CDVInvokedUrlCommand*)command;
 - (void)injectScriptCode:(CDVInvokedUrlCommand*)command;
 - (void)show:(CDVInvokedUrlCommand*)command;
 - (void)hide:(CDVInvokedUrlCommand*)command;
-
-@end
-
-@interface CDVInAppBrowserOptions : NSObject {}
-
-@property (nonatomic, assign) BOOL location;
-@property (nonatomic, assign) BOOL toolbar;
-@property (nonatomic, copy) NSString* closebuttoncaption;
-@property (nonatomic, copy) NSString* closebuttoncolor;
-@property (nonatomic, copy) NSString* toolbarposition;
-@property (nonatomic, copy) NSString* toolbarcolor;
-@property (nonatomic, assign) BOOL toolbartranslucent;
-@property (nonatomic, assign) BOOL hidenavigationbuttons;
-@property (nonatomic, copy) NSString* navigationbuttoncolor;
-@property (nonatomic, assign) BOOL clearcache;
-@property (nonatomic, assign) BOOL clearsessioncache;
-@property (nonatomic, assign) BOOL hidespinner;
-
-@property (nonatomic, copy) NSString* presentationstyle;
-@property (nonatomic, copy) NSString* transitionstyle;
-
-@property (nonatomic, assign) BOOL enableviewportscale;
-@property (nonatomic, assign) BOOL mediaplaybackrequiresuseraction;
-@property (nonatomic, assign) BOOL allowinlinemediaplayback;
-@property (nonatomic, assign) BOOL keyboarddisplayrequiresuseraction;
-@property (nonatomic, assign) BOOL suppressesincrementalrendering;
-@property (nonatomic, assign) BOOL hidden;
-@property (nonatomic, assign) BOOL disallowoverscroll;
-
-+ (CDVInAppBrowserOptions*)parseOptions:(NSString*)options;
+- (void)loadAfterBeforeload:(CDVInvokedUrlCommand*)command;
 
 @end
 
@@ -99,14 +78,8 @@ typedef void(^JsSuccessBlock)(NSString* result);
 - (void)navigateTo:(NSURL*)url;
 - (void)showLocationBar:(BOOL)show;
 - (void)showToolBar:(BOOL)show : (NSString *) toolbarPosition;
-- (void)setCloseButtonTitle:(NSString*)title : (NSString*) colorString;
+- (void)setCloseButtonTitle:(NSString*)title : (NSString*) colorString : (int) buttonIndex;
 
 - (id)initWithUserAgent:(NSString*)userAgent prevUserAgent:(NSString*)prevUserAgent browserOptions: (CDVInAppBrowserOptions*) browserOptions;
-
-@end
-
-@interface CDVInAppBrowserNavigationController : UINavigationController
-
-@property (nonatomic, weak) id <CDVScreenOrientationDelegate> orientationDelegate;
 
 @end
