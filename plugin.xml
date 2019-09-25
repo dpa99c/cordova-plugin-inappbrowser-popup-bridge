@@ -121,6 +121,8 @@
 
         <header-file src="src/ios/POPPopUpBridge.h" />
         <source-file src="src/ios/POPPopUpBridge.m" />
+        <header-file src="src/ios/POPWeakScriptMessageDelegate.h" />
+        <source-file src="src/ios/POPWeakScriptMessageDelegate.m" />
 
         <config-file target="*-Info.plist" parent="CFBundleURLTypes">
             <array>

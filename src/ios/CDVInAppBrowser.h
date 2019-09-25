@@ -23,7 +23,7 @@
 #import "CDVInAppBrowserUIDelegate.h"
 #import "CDVInAppBrowserOptions.h"
 #import "CDVInAppBrowserNavigationController.h"
-#import "POPPopupBridge.h"
+#import "POPPopUpBridge.h"
 
 @class CDVInAppBrowserViewController;
 
