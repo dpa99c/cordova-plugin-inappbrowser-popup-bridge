@@ -685,6 +685,9 @@ static CDVInAppBrowser* instance = nil;
         self.callbackId = nil;
     }
     
+    [self.inAppBrowserViewController.popupBridge destroy];
+    self.inAppBrowserViewController.popupBridge = nil;
+    
     [self.inAppBrowserViewController.configuration.userContentController removeScriptMessageHandlerForName:IAB_BRIDGE_NAME];
     self.inAppBrowserViewController.configuration = nil;
     
@@ -1262,6 +1265,16 @@ BOOL isExiting = FALSE;
         return [self.orientationDelegate shouldAutorotate];
     }
     return YES;
+}
+
+#pragma mark - POPPopupBridgeDelegate
+
+- (void)popupBridge:(POPPopupBridge *)bridge requestsPresentationOfViewController:(UIViewController *)viewController {
+    [self presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)popupBridge:(POPPopupBridge *)bridge requestsDismissalOfViewController:(UIViewController *)viewController {
+    [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (NSUInteger)supportedInterfaceOrientations
