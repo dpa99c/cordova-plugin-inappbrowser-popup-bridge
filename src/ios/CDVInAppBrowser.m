@@ -685,7 +685,6 @@ static CDVInAppBrowser* instance = nil;
         self.callbackId = nil;
     }
     
-    [self.inAppBrowserViewController.popupBridge destroy];
     self.inAppBrowserViewController.popupBridge = nil;
     
     [self.inAppBrowserViewController.configuration.userContentController removeScriptMessageHandlerForName:IAB_BRIDGE_NAME];
