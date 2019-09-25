@@ -20,8 +20,8 @@
 -->
 # Release Notes
 ### 1.0.21 (Sep 25, 2019)
-Fix issues with iOS 13.
-Align with latest version of `cordova-plugin-inappbrowser` master branch.
+Fix IAB issues with iOS 13: align with latest version of `cordova-plugin-inappbrowser` master branch.
+Update to latest version to fix iOS 13 issues with PopupBridge library. 
 
 ### 1.0.20 (Jun 25, 2019)
 Update legacy Xpath reference to `<application>` element in AndroidManifest.xml so it works with `cordova-android@8`.
