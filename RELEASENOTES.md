@@ -19,6 +19,9 @@
 #
 -->
 # Release Notes
+### 1.0.22 (Sep 26, 2019)
+Fix status bar height on iPhone X-family devices.
+
 ### 1.0.21 (Sep 25, 2019)
 Fix IAB issues with iOS 13: align with latest version of `cordova-plugin-inappbrowser` master branch.
 Update to latest version to fix iOS 13 issues with PopupBridge library. 
