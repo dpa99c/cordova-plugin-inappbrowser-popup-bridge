@@ -675,6 +675,10 @@ static CDVInAppBrowser* instance = nil;
     }
 }
 
+- (void) nilTmpWindow{
+    self->tmpWindow = nil;
+}
+
 - (void)browserExit
 {
     if (self.callbackId != nil) {
@@ -1077,14 +1081,19 @@ BOOL isExiting = FALSE;
     self.currentURL = nil;
     
     __weak UIViewController* weakSelf = self;
+    CDVInAppBrowser* navigationDelegate = self.navigationDelegate;
     
     // Run later to avoid the "took a long time" log message.
     dispatch_async(dispatch_get_main_queue(), ^{
         isExiting = TRUE;
         if ([weakSelf respondsToSelector:@selector(presentingViewController)]) {
-            [[weakSelf presentingViewController] dismissViewControllerAnimated:YES completion:nil];
+            [[weakSelf presentingViewController] dismissViewControllerAnimated:YES completion:^{
+                [navigationDelegate nilTmpWindow];
+            }];
         } else {
-            [[weakSelf parentViewController] dismissViewControllerAnimated:YES completion:nil];
+            [[weakSelf parentViewController] dismissViewControllerAnimated:YES completion:^{
+                [navigationDelegate nilTmpWindow];
+            }];
         }
     });
 }
