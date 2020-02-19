@@ -1,37 +1,35 @@
-## PR Type
-What kind of change does this PR introduce?
+<!--
+Please make sure the checklist boxes are all checked before submitting the PR. The checklist is intended as a quick reference, for complete details please see our Contributor Guidelines:
 
-<!-- Please check the one that applies to this PR using "x". -->
-- [ ] Bugfix
-- [ ] Feature
-- [ ] Code style update (formatting, local variables)
-- [ ] Refactoring (no functional changes, no api changes)
-- [ ] Documentation  changes
-- [ ] Other... Please describe:
+http://cordova.apache.org/contribute/contribute_guidelines.html
 
-<!-- Fill out the relevant sections below and delete irrelevant sections. -->
+Thanks!
+-->
 
-## PR Checklist
-For bug fixes / features, please check if your PR fulfills the following requirements:
+### Platforms affected
 
-- [ ] Testing has been carried out for the changes have been added
-- [ ] Regression testing has been carried out for existing functionality
-- [ ] Docs have been added / updated
 
-## What is the purpose of this PR?
-<!-- Describe any current behavior that you are modifying, or link to a relevant issue. -->
-<!-- Describe the new behaviour added/modified and its purpose. -->
 
-## Does this PR introduce a breaking change?
-- [ ] Yes
-- [ ] No
+### Motivation and Context
+<!-- Why is this change required? What problem does it solve? -->
+<!-- If it fixes an open issue, please link to the issue here. -->
 
-<!-- If this PR contains a breaking change, please describe the impact and migration path for existing plugin versions. -->
 
-## What testing has been done on the changes in the PR?
-<!-- e.g. if an example project exists for this plugin, has it been updated to test the new functionality? -->
 
-## What testing has been done on existing functionality?
-<!-- e.g. if an example project exists for this plugin, has been it been tested to ensure no regression bugs have been introduced? -->
+### Description
+<!-- Describe your changes in detail -->
 
-## Other information
+
+
+### Testing
+<!-- Please describe in detail how you tested your changes. -->
+
+
+
+### Checklist
+
+- [ ] I've run the tests to see all new and existing tests pass
+- [ ] I added automated test coverage as appropriate for this change
+- [ ] Commit is prefixed with `(platform)` if this change only applies to one platform (e.g. `(android)`)
+- [ ] If this Pull Request resolves an issue, I linked to the issue in the text above (and used the correct [keyword to close issues using keywords](https://help.github.com/articles/closing-issues-using-keywords/))
+- [ ] I've updated the documentation if necessary

@@ -17,9 +17,9 @@
  under the License.
  */
 
-#import "CDVInAppBrowserUIDelegate.h"
+#import "CDVWKInAppBrowserUIDelegate.h"
 
-@implementation CDVInAppBrowserUIDelegate
+@implementation CDVWKInAppBrowserUIDelegate
 
 - (instancetype)initWithTitle:(NSString*)title
 {

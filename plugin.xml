@@ -19,19 +19,18 @@
 -->
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        id="cordova-plugin-inappbrowser-popup-bridge"
-        version="1.0.22">
+           id="cordova-plugin-inappbrowser"
+      version="3.2.1-dev">
 
-    <name>InAppBrowser with PopupBridge</name>
-    <description>Cordova InAppBrowser PopupBridge Plugin</description>
+    <name>InAppBrowser</name>
+    <description>Cordova InAppBrowser Plugin</description>
     <license>Apache 2.0</license>
-    <keywords>cordova,in,app,browser,inappbrowser,paypal,braintree</keywords>
-    <repo>"https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge.git</repo>
+    <keywords>cordova,in,app,browser,inappbrowser</keywords>
+    <repo>https://github.com/apache/cordova-plugin-inappbrowser</repo>
+    <issue>https://github.com/apache/cordova-plugin-inappbrowser/issues</issue>
 
     <engines>
-        <engine name="cordova" version=">=3.1.0" />
+      <engine name="cordova" version=">=3.1.0" /><!-- Needs cordova/urlutil -->
     </engines>
 
     <!-- android -->
@@ -40,7 +39,6 @@
             <clobbers target="cordova.InAppBrowser.open" />
             <clobbers target="window.open" />
         </js-module>
-
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="InAppBrowser">
                 <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser"/>
@@ -51,7 +49,7 @@
         <source-file src="src/android/InAppBrowserDialog.java" target-dir="src/org/apache/cordova/inappbrowser" />
         <source-file src="src/android/InAppChromeClient.java" target-dir="src/org/apache/cordova/inappbrowser" />
 
-        <!--  drawable src/android/resources -->
+        <!-- drawable src/android/resources -->
         <resource-file src="src/android/res/drawable-hdpi/ic_action_next_item.png" target="res/drawable-hdpi/ic_action_next_item.png" />
         <resource-file src="src/android/res/drawable-mdpi/ic_action_next_item.png" target="res/drawable-mdpi/ic_action_next_item.png" />
         <resource-file src="src/android/res/drawable-xhdpi/ic_action_next_item.png" target="res/drawable-xhdpi/ic_action_next_item.png" />
@@ -67,29 +65,7 @@
         <resource-file src="src/android/res/drawable-xhdpi/ic_action_remove.png" target="res/drawable-xhdpi/ic_action_remove.png" />
         <resource-file src="src/android/res/drawable-xxhdpi/ic_action_remove.png" target="res/drawable-xxhdpi/ic_action_remove.png" />
 
-        <!-- PopupBridge -->
-        <config-file target="config.xml" parent="/*">
-            <preference name="android-minSdkVersion" value="16" tools:overrideLibrary="com.braintreepayments.popupbridge" />
-        </config-file>
-
-        <framework src="com.braintreepayments:popup-bridge:1.+" />
-
-        <hook type="after_prepare" src="src/android/update_manifest.js" />
-
-        <config-file target="AndroidManifest.xml" parent="application">
-            <activity android:name="com.braintreepayments.popupbridge.PopupBridgeActivity"
-                      android:launchMode="singleTask">
-                <intent-filter>
-                    <action android:name="android.intent.action.VIEW" />
-                    <category android:name="android.intent.category.DEFAULT" />
-                    <category android:name="android.intent.category.BROWSABLE" />
-                    <data android:scheme="${applicationId}.popupbridge" />
-                </intent-filter>
-            </activity>
-        </config-file>
-
     </platform>
-
 
     <!-- ios -->
     <platform name="ios">
@@ -100,44 +76,70 @@
         <config-file target="config.xml" parent="/*">
             <feature name="InAppBrowser">
                 <param name="ios-package" value="CDVInAppBrowser" />
+                <param name="onload" value="true" />
+            </feature>
+            <feature name="UIInAppBrowser">
+                <param name="ios-package" value="CDVUIInAppBrowser" />
+                <param name="onload" value="true" />
+            </feature>
+            <feature name="WKInAppBrowser">
+                <param name="ios-package" value="CDVWKInAppBrowser" />
+                <param name="onload" value="true" />
             </feature>
         </config-file>
 
         <header-file src="src/ios/CDVInAppBrowser.h" />
-        <source-file src="src/ios/CDVInAppBrowser.m" />
-        <header-file src="src/ios/CDVInAppBrowserUIDelegate.h" />
-        <source-file src="src/ios/CDVInAppBrowserUIDelegate.m" />
-        <header-file src="src/ios/CDVInAppBrowserNavigationController.h" />
-        <source-file src="src/ios/CDVInAppBrowserNavigationController.m" />
+	    <source-file src="src/ios/CDVInAppBrowser.m" />
         <header-file src="src/ios/CDVInAppBrowserOptions.h" />
         <source-file src="src/ios/CDVInAppBrowserOptions.m" />
+        <header-file src="src/ios/CDVInAppBrowserNavigationController.h" />
+        <source-file src="src/ios/CDVInAppBrowserNavigationController.m" />
+	    <header-file src="src/ios/CDVUIInAppBrowser.h" />
+	    <source-file src="src/ios/CDVUIInAppBrowser.m" />
+	    <header-file src="src/ios/CDVWKInAppBrowser.h" />
+	    <source-file src="src/ios/CDVWKInAppBrowser.m" />
+	    <header-file src="src/ios/CDVWKInAppBrowserUIDelegate.h" />
+	    <source-file src="src/ios/CDVWKInAppBrowserUIDelegate.m" />
 
-
-        <framework src="CoreGraphics.framework" />
-
-        <!-- Popup Bridge -->
-        <header-file src="src/ios/AppDelegate+PopupBridge.h" />
-        <source-file src="src/ios/AppDelegate+PopupBridge.m" />
-
-        <header-file src="src/ios/POPPopUpBridge.h" />
-        <source-file src="src/ios/POPPopUpBridge.m" />
-        <header-file src="src/ios/POPWeakScriptMessageDelegate.h" />
-        <source-file src="src/ios/POPWeakScriptMessageDelegate.m" />
-
-        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
-            <array>
-                <dict>
-                    <key>CFBundleTypeRole</key>
-                    <string>Editor</string>
-                    <key>CFBundleURLName</key>
-                    <string></string>
-                    <key>CFBundleURLSchemes</key>
-                    <array>
-                        <string>$PACKAGE_NAME.popupbridge</string>
-                    </array>
-                </dict>
-            </array>
-        </config-file>
+	    <framework src="CoreGraphics.framework" />
     </platform>
 
+    <!-- osx -->
+    <platform name="osx">
+        <js-module src="www/inappbrowser.js" name="inappbrowser">
+            <clobbers target="cordova.InAppBrowser.open" />
+            <clobbers target="window.open" />
+        </js-module>
+        <config-file target="config.xml" parent="/*">
+            <feature name="InAppBrowser">
+                <param name="osx-package" value="CDVInAppBrowser" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/osx/CDVInAppBrowser.h" />
+        <source-file src="src/osx/CDVInAppBrowser.m" />
+    </platform>
+
+    <!-- windows -->
+    <platform name="windows">
+        <js-module src="www/inappbrowser.js" name="inappbrowser">
+            <clobbers target="cordova.InAppBrowser.open" />
+            <clobbers target="window.open" />
+        </js-module>
+        <js-module src="src/windows/InAppBrowserProxy.js" name="InAppBrowserProxy">
+            <runs />
+        </js-module>
+        <asset src="www/inappbrowser.css" target="css/inappbrowser.css" />
+    </platform>
+
+    <!-- browser -->
+    <platform name="browser">
+        <js-module src="www/inappbrowser.js" name="inappbrowser">
+            <clobbers target="cordova.InAppBrowser.open" />
+            <clobbers target="window.open" />
+        </js-module>
+        <js-module src="src/browser/InAppBrowserProxy.js" name="InAppBrowserProxy">
+            <runs />
+        </js-module>
+    </platform>
 </plugin>
