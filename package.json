@@ -1,10 +1,10 @@
 {
-  "name": "cordova-plugin-inappbrowser-popup-bridge",
-  "version": "2.0.0",
-  "description": "Cordova InAppBrowser PopupBridge Plugin",
+  "name": "cordova-plugin-inappbrowser",
+  "version": "4.0.0-dev",
+  "description": "Cordova InAppBrowser Plugin",
   "types": "./types/index.d.ts",
   "cordova": {
-    "id": "cordova-plugin-inappbrowser-popup-bridge",
+    "id": "cordova-plugin-inappbrowser",
     "platforms": [
       "android",
       "browser",
@@ -15,10 +15,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge"
+    "url": "https://github.com/apache/cordova-plugin-inappbrowser"
   },
   "bugs": {
-    "url": "https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge/issues"
+    "url": "https://github.com/apache/cordova-plugin-inappbrowser/issues"
   },
   "keywords": [
     "cordova",
@@ -31,9 +31,7 @@
     "cordova-browser",
     "cordova-ios",
     "cordova-osx",
-    "cordova-windows",
-    "paypal",
-    "braintree"
+    "cordova-windows"
   ],
   "scripts": {
     "test": "npm run eslint",
@@ -49,11 +47,8 @@
       }
     }
   },
-  "author": "Dave Alden",
+  "author": "Apache Software Foundation",
   "license": "Apache-2.0",
-  "dependencies": {
-    "q": "^1.4.1"
-  },
   "devDependencies": {
     "eslint": "^4.0.0",
     "eslint-config-semistandard": "^11.0.0",

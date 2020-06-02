@@ -33,6 +33,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Color;
+import android.net.http.SslError;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,6 +51,7 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.HttpAuthHandler;
 import android.webkit.JavascriptInterface;
+import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -84,7 +86,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-import com.braintreepayments.popupbridge.PopupBridge;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class InAppBrowser extends CordovaPlugin {
@@ -118,6 +119,7 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String FOOTER = "footer";
     private static final String FOOTER_COLOR = "footercolor";
     private static final String BEFORELOAD = "beforeload";
+    private static final String FULLSCREEN = "fullscreen";
 
     private static final List customizableOptions = Arrays.asList(CLOSE_BUTTON_CAPTION, TOOLBAR_COLOR, NAVIGATION_COLOR, CLOSE_BUTTON_COLOR, FOOTER_COLOR);
 
@@ -148,9 +150,9 @@ public class InAppBrowser extends CordovaPlugin {
     private boolean showFooter = false;
     private String footerColor = "";
     private String beforeload = "";
+    private boolean fullscreen = true;
     private String[] allowedSchemes;
     private InAppBrowserClient currentClient;
-	private PopupBridge mPopupBridge;
 
     /**
      * Executes the request and returns PluginResult.
@@ -315,7 +317,7 @@ public class InAppBrowser extends CordovaPlugin {
             this.cordova.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (dialog != null) {
+                    if (dialog != null && !cordova.getActivity().isFinishing()) {
                         dialog.show();
                     }
                 }
@@ -328,7 +330,7 @@ public class InAppBrowser extends CordovaPlugin {
             this.cordova.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (dialog != null) {
+                    if (dialog != null && !cordova.getActivity().isFinishing()) {
                         dialog.hide();
                     }
                 }
@@ -539,7 +541,7 @@ public class InAppBrowser extends CordovaPlugin {
                 childView.setWebViewClient(new WebViewClient() {
                     // NB: wait for about:blank before dismissing
                     public void onPageFinished(WebView view, String url) {
-                        if (dialog != null) {
+                        if (dialog != null && !cordova.getActivity().isFinishing()) {
                             dialog.dismiss();
                             dialog = null;
                         }
@@ -694,9 +696,8 @@ public class InAppBrowser extends CordovaPlugin {
                 closeButtonColor = closeButtonColorSet;
             }
             String leftToRightSet = features.get(LEFT_TO_RIGHT);
-            if (leftToRightSet != null) {
-                leftToRight = leftToRightSet.equals("yes") ? true : false;
-            }
+            leftToRight = leftToRightSet != null && leftToRightSet.equals("yes");
+
             String toolbarColorSet = features.get(TOOLBAR_COLOR);
             if (toolbarColorSet != null) {
                 toolbarColor = android.graphics.Color.parseColor(toolbarColorSet);
@@ -715,6 +716,10 @@ public class InAppBrowser extends CordovaPlugin {
             }
             if (features.get(BEFORELOAD) != null) {
                 beforeload = features.get(BEFORELOAD);
+            }
+            String fullscreenSet = features.get(FULLSCREEN);
+            if (fullscreenSet != null) {
+                fullscreen = fullscreenSet.equals("yes") ? true : false;
             }
         }
 
@@ -796,7 +801,9 @@ public class InAppBrowser extends CordovaPlugin {
                 dialog = new InAppBrowserDialog(cordova.getActivity(), android.R.style.Theme_NoTitleBar);
                 dialog.getWindow().getAttributes().windowAnimations = android.R.style.Animation_Dialog;
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                if (fullscreen) {
+                    dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                }
                 dialog.setCancelable(true);
                 dialog.setInAppBroswer(getInAppBrowser());
 
@@ -931,11 +938,6 @@ public class InAppBrowser extends CordovaPlugin {
 
                 // WebView
                 inAppWebView = new WebView(cordova.getActivity());
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    try{
-                        mPopupBridge = PopupBridge.newInstance(cordova.getActivity(), inAppWebView);
-                    }catch (Exception e){} //swallow exception
-                }
                 inAppWebView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 inAppWebView.setId(Integer.valueOf(6));
                 // File Chooser Implemented ChromeClient
@@ -1463,6 +1465,46 @@ public class InAppBrowser extends CordovaPlugin {
             } catch (JSONException ex) {
                 LOG.d(LOG_TAG, "Should never happen");
             }
+        }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            super.onReceivedSslError(view, handler, error);
+            try {
+                JSONObject obj = new JSONObject();
+                obj.put("type", LOAD_ERROR_EVENT);
+                obj.put("url", error.getUrl());
+                obj.put("code", 0);
+                obj.put("sslerror", error.getPrimaryError());
+                String message;
+                switch (error.getPrimaryError()) {
+                case SslError.SSL_DATE_INVALID:
+                    message = "The date of the certificate is invalid";
+                    break;
+                case SslError.SSL_EXPIRED:
+                    message = "The certificate has expired";
+                    break;
+                case SslError.SSL_IDMISMATCH:
+                    message = "Hostname mismatch";
+                    break;
+                default:
+                case SslError.SSL_INVALID:
+                    message = "A generic error occurred";
+                    break;
+                case SslError.SSL_NOTYETVALID:
+                    message = "The certificate is not yet valid";
+                    break;
+                case SslError.SSL_UNTRUSTED:
+                    message = "The certificate authority is not trusted";
+                    break;
+                }
+                obj.put("message", message);
+
+                sendUpdate(obj, true, PluginResult.Status.ERROR);
+            } catch (JSONException ex) {
+                LOG.d(LOG_TAG, "Should never happen");
+            }
+            handler.cancel();
         }
 
         /**
