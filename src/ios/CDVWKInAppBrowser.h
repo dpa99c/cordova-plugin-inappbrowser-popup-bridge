@@ -23,7 +23,6 @@
 #import "CDVWKInAppBrowserUIDelegate.h"
 #import "CDVInAppBrowserOptions.h"
 #import "CDVInAppBrowserNavigationController.h"
-#import "POPPopUpBridge.h"
 
 @class CDVWKInAppBrowserViewController;
 
@@ -50,7 +49,7 @@
 
 @end
 
-@interface CDVWKInAppBrowserViewController : UIViewController <CDVScreenOrientationDelegate,WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler,POPPopupBridgeDelegate>{
+@interface CDVWKInAppBrowserViewController : UIViewController <CDVScreenOrientationDelegate,WKNavigationDelegate,WKUIDelegate,WKScriptMessageHandler>{
     @private
     CDVInAppBrowserOptions *_browserOptions;
     NSDictionary *_settings;
@@ -69,8 +68,6 @@
 @property (nonatomic, weak) id <CDVScreenOrientationDelegate> orientationDelegate;
 @property (nonatomic, weak) CDVWKInAppBrowser* navigationDelegate;
 @property (nonatomic) NSURL* currentURL;
-
-@property (nonatomic, strong) POPPopupBridge *popupBridge;
 
 - (void)close;
 - (void)navigateTo:(NSURL*)url;
