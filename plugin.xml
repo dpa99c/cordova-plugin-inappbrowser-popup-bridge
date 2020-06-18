@@ -19,19 +19,20 @@
 -->
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-           id="cordova-plugin-inappbrowser"
-      version="4.0.1-dev">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        id="cordova-plugin-inappbrowser-popup-bridge"
+        version="4.0.0">
 
     <name>InAppBrowser</name>
-    <description>Cordova InAppBrowser Plugin</description>
+    <description>Cordova InAppBrowser with PopupBridge Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova,in,app,browser,inappbrowser</keywords>
-    <repo>https://github.com/apache/cordova-plugin-inappbrowser</repo>
-    <issue>https://github.com/apache/cordova-plugin-inappbrowser/issues</issue>
+    <repo>https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge</repo>
+    <issue>https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge/issues</issue>
 
     <engines>
       <engine name="cordova" version=">=3.1.0" /><!-- Needs cordova/urlutil -->
-      <engine name="cordova-ios" version=">=4.0.0" />
     </engines>
 
     <!-- android -->
@@ -65,6 +66,26 @@
         <resource-file src="src/android/res/drawable-xhdpi/ic_action_remove.png" target="res/drawable-xhdpi/ic_action_remove.png" />
         <resource-file src="src/android/res/drawable-xxhdpi/ic_action_remove.png" target="res/drawable-xxhdpi/ic_action_remove.png" />
 
+        <!-- PopupBridge -->
+        <config-file target="config.xml" parent="/*">
+            <preference name="android-minSdkVersion" value="16" tools:overrideLibrary="com.braintreepayments.popupbridge" />
+        </config-file>
+
+        <framework src="com.braintreepayments:popup-bridge:1.+" />
+
+        <hook type="after_prepare" src="src/android/update_manifest.js" />
+
+        <config-file target="AndroidManifest.xml" parent="application">
+            <activity android:name="com.braintreepayments.popupbridge.PopupBridgeActivity"
+                      android:launchMode="singleTask">
+                <intent-filter>
+                    <action android:name="android.intent.action.VIEW" />
+                    <category android:name="android.intent.category.DEFAULT" />
+                    <category android:name="android.intent.category.BROWSABLE" />
+                    <data android:scheme="${applicationId}.popupbridge" />
+                </intent-filter>
+            </activity>
+        </config-file>
     </platform>
 
     <!-- ios -->
@@ -88,6 +109,30 @@
 	    <source-file src="src/ios/CDVWKInAppBrowserUIDelegate.m" />
 
 	    <framework src="CoreGraphics.framework" />
+
+        <!-- Popup Bridge -->
+        <header-file src="src/ios/AppDelegate+PopupBridge.h" />
+        <source-file src="src/ios/AppDelegate+PopupBridge.m" />
+
+        <header-file src="src/ios/POPPopUpBridge.h" />
+        <source-file src="src/ios/POPPopUpBridge.m" />
+        <header-file src="src/ios/POPWeakScriptMessageDelegate.h" />
+        <source-file src="src/ios/POPWeakScriptMessageDelegate.m" />
+
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+            <array>
+                <dict>
+                    <key>CFBundleTypeRole</key>
+                    <string>Editor</string>
+                    <key>CFBundleURLName</key>
+                    <string></string>
+                    <key>CFBundleURLSchemes</key>
+                    <array>
+                        <string>$PACKAGE_NAME.popupbridge</string>
+                    </array>
+                </dict>
+            </array>
+        </config-file>
     </platform>
 
     <!-- osx -->
