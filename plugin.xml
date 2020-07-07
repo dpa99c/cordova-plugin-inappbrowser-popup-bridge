@@ -31,10 +31,6 @@
     <repo>https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge</repo>
     <issue>https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge/issues</issue>
 
-    <engines>
-      <engine name="cordova" version=">=3.1.0" /><!-- Needs cordova/urlutil -->
-    </engines>
-
     <!-- android -->
     <platform name="android">
         <js-module src="www/inappbrowser.js" name="inappbrowser">
