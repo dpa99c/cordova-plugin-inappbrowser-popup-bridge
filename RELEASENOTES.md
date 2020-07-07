@@ -1,4 +1,7 @@
 # Release Notes
+### 4.0.2 (Jul 07, 2020)
+Remove legacy engines constraints. Resolves #8.
+
 ### 4.0.1 (Jul 07, 2020)
 Fix intermittent calling of "beforeload" callback on Android.
 See https://github.com/apache/cordova-plugin-inappbrowser/issues/686
