@@ -940,6 +940,7 @@ public class InAppBrowser extends CordovaPlugin {
 
                 // WebView
                 inAppWebView = new WebView(cordova.getActivity());
+                inAppWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     try{
                         mPopupBridge = PopupBridge.newInstance(cordova.getActivity(), inAppWebView);
