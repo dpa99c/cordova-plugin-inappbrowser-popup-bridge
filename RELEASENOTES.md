@@ -1,4 +1,9 @@
 # Release Notes
+
+### 4.0.3 (Jul 23, 2020)
+(ios): Fix incorrect view height from the second open time.
+See https://github.com/apache/cordova-plugin-inappbrowser/pull/738
+
 ### 4.0.2 (Jul 07, 2020)
 Remove legacy engines constraints. Resolves #8.
 
