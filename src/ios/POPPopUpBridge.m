@@ -125,14 +125,13 @@ NSString * const kPOPURLHost = @"popupbridgev1";
 }
 
 + (BOOL)openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication {
-    return [POPPopupBridge openURL:url];
+    if (returnBlock) {
+        return returnBlock(url);
+    }
+    return NO;
 }
 
 + (BOOL)openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    return [POPPopupBridge openURL:url];
-}
-
-+ (BOOL)openURL:(NSURL *)url {
     if (returnBlock) {
         return returnBlock(url);
     }
