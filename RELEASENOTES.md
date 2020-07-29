@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.0.5 (Jul 29, 2020)
+(ios) Fix openURL callbacks
+
 ### 4.0.4 (Jul 27, 2020)
 (ios): Update POPPopUpBridge to latest v1.1.0 to [fix issue with opening popup multiple times](https://github.com/braintree/popup-bridge-ios/commit/628ce675da9d6ca280dcf48566a027723d74a4d7).
 
