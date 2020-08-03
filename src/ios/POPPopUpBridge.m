@@ -36,52 +36,6 @@ NSString * const kPOPURLHost = @"popupbridgev1";
         WKUserScript *script = [[WKUserScript alloc] initWithSource:javascript injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
         [webView.configuration.userContentController addUserScript:script];
 
-        __weak POPPopupBridge *weakSelf = self;
-        returnBlock = ^(NSURL *url) {
-            NSString *err = @"null";
-            NSString *payload = @"null";
-            NSString *script;
-
-            if (url) {
-                NSURLComponents *urlComponents = [[NSURLComponents alloc] initWithURL:url resolvingAgainstBaseURL:NO];
-                NSString *path = urlComponents.path;
-
-                if ([urlComponents.scheme localizedCaseInsensitiveCompare:scheme] != NSOrderedSame ||
-                    [urlComponents.host localizedCaseInsensitiveCompare:kPOPURLHost] != NSOrderedSame) {
-                    return NO;
-                }
-
-                [weakSelf dismissSafariViewController];
-
-                NSMutableDictionary *payloadDictionary = [NSMutableDictionary new];
-                payloadDictionary[@"path"] = path;
-                payloadDictionary[@"queryItems"] = [weakSelf.class dictionaryForQueryString:url.query];
-                if (url.fragment) {
-                    payloadDictionary[@"hash"] = url.fragment;
-                }
-
-                NSError *error;
-                NSData *payloadData = [NSJSONSerialization dataWithJSONObject:payloadDictionary options:0 error:&error];
-                if (!payloadData) {
-                    NSString *errorMessage = [NSString stringWithFormat:@"Failed to parse query items from return URL. %@", error.localizedDescription];
-                    err = [NSString stringWithFormat:@"new Error(\"%@\")", errorMessage];
-                } else {
-                    payload = [[NSString alloc] initWithData:payloadData encoding:NSUTF8StringEncoding];
-                }
-                script = [NSString stringWithFormat:@"window.popupBridge.onComplete(%@, %@);", err, payload];
-            } else {
-                script = @""
-                "if (typeof window.popupBridge.onCancel === 'function') {"
-                "  window.popupBridge.onCancel();"
-                "} else {"
-                "  window.popupBridge.onComplete(null, null);"
-                "}";
-            }
-
-            [weakSelf.class injectWebView:weakSelf.webView withJavaScript:script];
-
-            return YES;
-        };
     }
     return self;
 }
@@ -121,19 +75,24 @@ NSString * const kPOPURLHost = @"popupbridgev1";
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
     if (returnBlock) {
         returnBlock(nil);
+        returnBlock = nil;
     }
 }
 
 + (BOOL)openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication {
     if (returnBlock) {
-        return returnBlock(url);
+        BOOL result = returnBlock(url);
+        returnBlock = nil;
+        return result;
     }
     return NO;
 }
 
 + (BOOL)openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
     if (returnBlock) {
-        return returnBlock(url);
+        BOOL result = returnBlock(url);
+        returnBlock = nil;
+        return result;
     }
     return NO;
 }
@@ -157,6 +116,53 @@ NSString * const kPOPURLHost = @"popupbridgev1";
             [self dismissSafariViewController];
 
             NSURL *url = [NSURL URLWithString:urlString];
+            
+            __weak POPPopupBridge *weakSelf = self;
+            returnBlock = ^(NSURL *url) {
+                NSString *err = @"null";
+                NSString *payload = @"null";
+                NSString *script;
+
+                if (url) {
+                    NSURLComponents *urlComponents = [[NSURLComponents alloc] initWithURL:url resolvingAgainstBaseURL:NO];
+                    NSString *path = urlComponents.path;
+
+                    if ([urlComponents.scheme localizedCaseInsensitiveCompare:scheme] != NSOrderedSame ||
+                        [urlComponents.host localizedCaseInsensitiveCompare:kPOPURLHost] != NSOrderedSame) {
+                        return NO;
+                    }
+
+                    [weakSelf dismissSafariViewController];
+
+                    NSMutableDictionary *payloadDictionary = [NSMutableDictionary new];
+                    payloadDictionary[@"path"] = path;
+                    payloadDictionary[@"queryItems"] = [weakSelf.class dictionaryForQueryString:url.query];
+                    if (url.fragment) {
+                        payloadDictionary[@"hash"] = url.fragment;
+                    }
+
+                    NSError *error;
+                    NSData *payloadData = [NSJSONSerialization dataWithJSONObject:payloadDictionary options:0 error:&error];
+                    if (!payloadData) {
+                        NSString *errorMessage = [NSString stringWithFormat:@"Failed to parse query items from return URL. %@", error.localizedDescription];
+                        err = [NSString stringWithFormat:@"new Error(\"%@\")", errorMessage];
+                    } else {
+                        payload = [[NSString alloc] initWithData:payloadData encoding:NSUTF8StringEncoding];
+                    }
+                    script = [NSString stringWithFormat:@"window.popupBridge.onComplete(%@, %@);", err, payload];
+                } else {
+                    script = @""
+                    "if (typeof window.popupBridge.onCancel === 'function') {"
+                    "  window.popupBridge.onCancel();"
+                    "} else {"
+                    "  window.popupBridge.onComplete(null, null);"
+                    "}";
+                }
+
+                [weakSelf.class injectWebView:weakSelf.webView withJavaScript:script];
+
+                return YES;
+            };
             
             if ([self.delegate respondsToSelector:@selector(popupBridge:willOpenURL:)]) {
                 [self.delegate popupBridge:self willOpenURL:url];
