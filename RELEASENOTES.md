@@ -1,5 +1,8 @@
 # Release Notes
 
+### 4.1.0 (Aug 03, 2020)
+(ios) Update POPPopUpBridge iOS to latest v1.1.0
+
 ### 4.0.3 (Jul 23, 2020)
 (ios): Fix incorrect view height from the second open time.
 See https://github.com/apache/cordova-plugin-inappbrowser/pull/738
