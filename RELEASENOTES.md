@@ -1,6 +1,6 @@
 # Release Notes
 
-### 4.0.6 (Aug 03, 2020)
+### 4.0.7 (Aug 03, 2020)
 (ios) Rework POPPopUpBridge.m to ensure returnBlock is redefined at the start of each new PopupBridge session.
 
 ### 4.0.5 (Jul 29, 2020)
