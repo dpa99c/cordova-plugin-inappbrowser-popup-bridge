@@ -1,5 +1,9 @@
 # Release Notes
 
+### 4.1.1 (Sep 01, 2020)
+(iOS) Support setting inappbrowser statusbar content colour via preference in `config.xml`
+Cherrypicked from https://github.com/apache/cordova-plugin-inappbrowser/pull/765
+
 ### 4.1.0 (Aug 03, 2020)
 (ios) Update POPPopUpBridge iOS to latest v1.1.0
 
