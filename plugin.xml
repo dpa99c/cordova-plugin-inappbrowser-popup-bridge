@@ -65,6 +65,10 @@
         <!-- PopupBridge -->
         <config-file target="config.xml" parent="/*">
             <preference name="android-minSdkVersion" value="16" tools:overrideLibrary="com.braintreepayments.popupbridge" />
+            <!-- Whitelist Chrome for API 30 -->
+            <queries>
+                <package android:name="com.android.chrome" />
+            </queries>
         </config-file>
 
         <framework src="com.braintreepayments:popup-bridge:1.+" />
