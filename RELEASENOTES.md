@@ -1,5 +1,5 @@
 # Release Notes
-### 4.1.2 (Jul 06, 2021)
+### 4.1.3 (Jul 06, 2021)
 (Android) Whitelist the Chrome package to allow the plugin to invoke it on API 30
 
 ### 4.1.1 (Sep 01, 2020)
