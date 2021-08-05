@@ -22,7 +22,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         id="cordova-plugin-inappbrowser-popup-bridge"
-        version="4.1.3">
+        version="5.0.0">
 
     <name>InAppBrowser</name>
     <description>Cordova InAppBrowser with PopupBridge Plugin</description>
@@ -33,6 +33,8 @@
 
     <!-- android -->
     <platform name="android">
+        <preference name="POPUPBRIDGE_ANDROID_VERSION" default="4.1.0" />
+
         <js-module src="www/inappbrowser.js" name="inappbrowser">
             <clobbers target="cordova.InAppBrowser.open" />
         </js-module>
@@ -64,24 +66,12 @@
 
         <!-- PopupBridge -->
         <config-file target="config.xml" parent="/*">
-            <preference name="android-minSdkVersion" value="16" tools:overrideLibrary="com.braintreepayments.popupbridge" />
+            <preference name="android-minSdkVersion" value="21" tools:overrideLibrary="com.braintreepayments.popupbridge" />
         </config-file>
 
-        <framework src="com.braintreepayments:popup-bridge:1.+" />
+        <framework src="com.braintreepayments.api:popup-bridge:$POPUPBRIDGE_ANDROID_VERSION" />
 
         <hook type="after_prepare" src="src/android/update_manifest.js" />
-
-        <config-file target="AndroidManifest.xml" parent="application">
-            <activity android:name="com.braintreepayments.popupbridge.PopupBridgeActivity"
-                      android:launchMode="singleTask">
-                <intent-filter>
-                    <action android:name="android.intent.action.VIEW" />
-                    <category android:name="android.intent.category.DEFAULT" />
-                    <category android:name="android.intent.category.BROWSABLE" />
-                    <data android:scheme="${applicationId}.popupbridge" />
-                </intent-filter>
-            </activity>
-        </config-file>
 
         <!-- Whitelist Chrome for API 30 -->
         <config-file target="AndroidManifest.xml" parent="/*">
