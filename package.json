@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-inappbrowser-popup-bridge",
-  "version": "4.1.3",
+  "version": "5.0.0",
   "description": "Cordova InAppBrowser PopupBridge Plugin",
   "types": "./types/index.d.ts",
   "cordova": {
