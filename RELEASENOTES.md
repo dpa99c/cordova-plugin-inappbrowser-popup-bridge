@@ -1,4 +1,9 @@
 # Release Notes
+### 4.1.4 (Aug 06, 2021)
+(Android) Crashfix: add custom PopupBridge class from popup-bridge-android containing crashfix
+* Patched from [this v4 commit](https://github.com/braintree/popup-bridge-android/commit/4bff178bca04d0e56d8f6a5f277b07eb1a72f51e) 
+* Resolves [#26](https://github.com/braintree/popup-bridge-android/issues/26)
+
 ### 4.1.3 (Jul 06, 2021)
 (Android) Whitelist the Chrome package to allow the plugin to invoke it on API 30
 
