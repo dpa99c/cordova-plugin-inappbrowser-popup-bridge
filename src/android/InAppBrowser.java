@@ -86,7 +86,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-import com.braintreepayments.popupbridge.PopupBridge;
+import org.apache.cordova.inappbrowser.PopupBridge;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class InAppBrowser extends CordovaPlugin {
