@@ -22,7 +22,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         id="cordova-plugin-inappbrowser-popup-bridge"
-        version="4.1.3">
+        version="5.0.0">
 
     <name>InAppBrowser</name>
     <description>Cordova InAppBrowser with PopupBridge Plugin</description>
@@ -45,6 +45,7 @@
         <source-file src="src/android/InAppBrowser.java" target-dir="src/org/apache/cordova/inappbrowser" />
         <source-file src="src/android/InAppBrowserDialog.java" target-dir="src/org/apache/cordova/inappbrowser" />
         <source-file src="src/android/InAppChromeClient.java" target-dir="src/org/apache/cordova/inappbrowser" />
+        <source-file src="src/android/PopupBridgeActivity.java" target-dir="src/org/apache/cordova/inappbrowser" />
 
         <!-- drawable src/android/resources -->
         <resource-file src="src/android/res/drawable-hdpi/ic_action_next_item.png" target="res/drawable-hdpi/ic_action_next_item.png" />
@@ -64,15 +65,15 @@
 
         <!-- PopupBridge -->
         <config-file target="config.xml" parent="/*">
-            <preference name="android-minSdkVersion" value="16" tools:overrideLibrary="com.braintreepayments.popupbridge" />
+            <preference name="android-minSdkVersion" value="21" tools:overrideLibrary="com.braintreepayments.popupbridge" />
         </config-file>
 
-        <framework src="com.braintreepayments:popup-bridge:1.+" />
+        <framework src="com.braintreepayments.api:popup-bridge:4.1.0" />
 
         <hook type="after_prepare" src="src/android/update_manifest.js" />
 
         <config-file target="AndroidManifest.xml" parent="application">
-            <activity android:name="com.braintreepayments.popupbridge.PopupBridgeActivity"
+            <activity android:name="org.apache.cordova.inappbrowser.PopupBridgeActivity"
                       android:launchMode="singleTask">
                 <intent-filter>
                     <action android:name="android.intent.action.VIEW" />
