@@ -1,4 +1,11 @@
 # Release Notes
+
+### 5.0.0
+(Android) BREAKING: Update from `popup-bridge-android@1` to `popup-bridge-android@4`.
+- Fixes PopupBridge functionality when default browser is changed from Chrome to a 3rd party browser (e.g. Firefox)
+- Requires the Cordova activity to run as `singleTask`
+    - Add `<preference name="AndroidLaunchMode" value="singleTask" />` to `<platform name="android">` in `config.xml` 
+
 ### 4.1.3 (Jul 06, 2021)
 (Android) Whitelist the Chrome package to allow the plugin to invoke it on API 30
 

@@ -72,13 +72,6 @@
         <framework src="com.braintreepayments.api:popup-bridge:$POPUPBRIDGE_ANDROID_VERSION" />
 
         <hook type="after_prepare" src="src/android/update_manifest.js" />
-
-        <!-- Whitelist Chrome for API 30 -->
-        <config-file target="AndroidManifest.xml" parent="/*">
-            <queries>
-                <package android:name="com.android.chrome" />
-            </queries>
-        </config-file>
     </platform>
 
     <!-- ios -->

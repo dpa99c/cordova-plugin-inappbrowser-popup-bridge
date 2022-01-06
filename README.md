@@ -24,6 +24,8 @@ The following supported platform versions are based on the versions suppored by 
 - Requires `cordova-android@10+`
 - Requires Gradle v7.1.1 or above
 - Supports Android 5.0 / API 21 and above
+- Since v5, requires the Cordova activity to run as `singleTask`
+    - Add `<preference name="AndroidLaunchMode" value="singleTask" />` to `<platform name="android">` in `config.xml`
 
 ## iOS
 - Requires `cordova-ios@6+`
