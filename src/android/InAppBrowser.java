@@ -38,6 +38,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -66,6 +67,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
+
+import com.braintreepayments.api.PopupBridgeClient;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.Config;
 import org.apache.cordova.CordovaArgs;
@@ -86,7 +92,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-import org.apache.cordova.inappbrowser.PopupBridge;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class InAppBrowser extends CordovaPlugin {
@@ -154,7 +159,7 @@ public class InAppBrowser extends CordovaPlugin {
     private boolean fullscreen = true;
     private String[] allowedSchemes;
     private InAppBrowserClient currentClient;
-	private PopupBridge mPopupBridge;
+    private PopupBridgeClient popupBridgeClient;
 
     /**
      * Executes the request and returns PluginResult.
@@ -373,6 +378,12 @@ public class InAppBrowser extends CordovaPlugin {
         if (shouldPauseInAppBrowser) {
             inAppWebView.onResume();
         }
+        popupBridgeClient.deliverPopupBridgeResult((FragmentActivity)cordova.getActivity());
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        cordova.getActivity().setIntent(intent);
     }
 
     /**
@@ -416,12 +427,7 @@ public class InAppBrowser extends CordovaPlugin {
                 @SuppressLint("NewApi")
                 @Override
                 public void run() {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-                        // This action will have the side-effect of blurring the currently focused element
-                        inAppWebView.loadUrl("javascript:" + finalScriptToInject);
-                    } else {
-                        inAppWebView.evaluateJavascript(finalScriptToInject, null);
-                    }
+                    inAppWebView.evaluateJavascript(finalScriptToInject, null);
                 }
             });
         } else {
@@ -546,6 +552,16 @@ public class InAppBrowser extends CordovaPlugin {
                         if (dialog != null && !cordova.getActivity().isFinishing()) {
                             dialog.dismiss();
                             dialog = null;
+                        }
+
+                        // Fix for webView window not being destroyed correctly causing memory leak
+                        // (https://github.com/apache/cordova-plugin-inappbrowser/issues/290)
+                        if (url.equals(new String("about:blank"))) {
+                            inAppWebView.onPause();
+                            inAppWebView.removeAllViews();
+                            inAppWebView.destroyDrawingCache();
+                            inAppWebView.destroy();
+                            inAppWebView = null;
                         }
                     }
                 });
@@ -764,8 +780,7 @@ public class InAppBrowser extends CordovaPlugin {
                     if (closeButtonColor != "") close.setColorFilter(android.graphics.Color.parseColor(closeButtonColor));
                     close.setImageDrawable(closeIcon);
                     close.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    if (Build.VERSION.SDK_INT >= 16)
-                        close.getAdjustViewBounds();
+                    close.getAdjustViewBounds();
 
                     _close = close;
                 }
@@ -775,10 +790,7 @@ public class InAppBrowser extends CordovaPlugin {
                 else closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 _close.setLayoutParams(closeLayoutParams);
 
-                if (Build.VERSION.SDK_INT >= 16)
-                    _close.setBackground(null);
-                else
-                    _close.setBackgroundDrawable(null);
+                _close.setBackground(null);
 
                 _close.setContentDescription("Close Button");
                 _close.setId(Integer.valueOf(id));
@@ -847,15 +859,12 @@ public class InAppBrowser extends CordovaPlugin {
                 int backResId = activityRes.getIdentifier("ic_action_previous_item", "drawable", cordova.getActivity().getPackageName());
                 Drawable backIcon = activityRes.getDrawable(backResId);
                 if (navigationButtonColor != "") back.setColorFilter(android.graphics.Color.parseColor(navigationButtonColor));
-                if (Build.VERSION.SDK_INT >= 16)
-                    back.setBackground(null);
-                else
-                    back.setBackgroundDrawable(null);
+                back.setBackground(null);
                 back.setImageDrawable(backIcon);
                 back.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 back.setPadding(0, this.dpToPixels(10), 0, this.dpToPixels(10));
-                if (Build.VERSION.SDK_INT >= 16)
-                    back.getAdjustViewBounds();
+                back.getAdjustViewBounds();
+
 
                 back.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
@@ -873,15 +882,12 @@ public class InAppBrowser extends CordovaPlugin {
                 int fwdResId = activityRes.getIdentifier("ic_action_next_item", "drawable", cordova.getActivity().getPackageName());
                 Drawable fwdIcon = activityRes.getDrawable(fwdResId);
                 if (navigationButtonColor != "") forward.setColorFilter(android.graphics.Color.parseColor(navigationButtonColor));
-                if (Build.VERSION.SDK_INT >= 16)
-                    forward.setBackground(null);
-                else
-                    forward.setBackgroundDrawable(null);
+                forward.setBackground(null);
                 forward.setImageDrawable(fwdIcon);
                 forward.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 forward.setPadding(0, this.dpToPixels(10), 0, this.dpToPixels(10));
-                if (Build.VERSION.SDK_INT >= 16)
-                    forward.getAdjustViewBounds();
+                forward.getAdjustViewBounds();
+
 
                 forward.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
@@ -941,11 +947,17 @@ public class InAppBrowser extends CordovaPlugin {
                 // WebView
                 inAppWebView = new WebView(cordova.getActivity());
                 inAppWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    try{
-                        mPopupBridge = PopupBridge.newInstance(cordova.getActivity(), inAppWebView);
-                    }catch (Exception e){} //swallow exception
-                }
+                try{
+
+                    String urlScheme = cordova.getActivity().getApplicationContext().getPackageName() + ".popupbridge";
+                    popupBridgeClient = new PopupBridgeClient(cordova.getActivity(), inAppWebView, urlScheme);
+
+                    // register error listener
+                    popupBridgeClient.setErrorListener(error -> {
+                        Log.e("PopupBridgeActivity", error.getMessage());
+                    });
+
+                }catch (Exception e){} //swallow exception
                 inAppWebView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 inAppWebView.setId(Integer.valueOf(6));
                 // File Chooser Implemented ChromeClient
@@ -1014,10 +1026,8 @@ public class InAppBrowser extends CordovaPlugin {
                     }
                 }
 
-                if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                    settings.setMediaPlaybackRequiresUserGesture(mediaPlaybackRequiresUserGesture);
-                    inAppWebView.addJavascriptInterface(new JsObject(), "cordova_iab");
-                }
+                settings.setMediaPlaybackRequiresUserGesture(mediaPlaybackRequiresUserGesture);
+                inAppWebView.addJavascriptInterface(new JsObject(), "cordova_iab");
 
                 String overrideUserAgent = preferences.getString("OverrideUserAgent", null);
                 String appendUserAgent = preferences.getString("AppendUserAgent", null);
@@ -1045,10 +1055,7 @@ public class InAppBrowser extends CordovaPlugin {
                     CookieManager.getInstance().removeSessionCookie();
                 }
 
-                // Enable Thirdparty Cookies on >=Android 5.0 device
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    CookieManager.getInstance().setAcceptThirdPartyCookies(inAppWebView,true);
-                }
+                CookieManager.getInstance().setAcceptThirdPartyCookies(inAppWebView,true);
 
                 inAppWebView.loadUrl(url);
                 inAppWebView.setId(Integer.valueOf(6));
@@ -1136,32 +1143,14 @@ public class InAppBrowser extends CordovaPlugin {
      * @param intent the data from android file chooser
      */
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        // For Android >= 5.0
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            LOG.d(LOG_TAG, "onActivityResult (For Android >= 5.0)");
-            // If RequestCode or Callback is Invalid
-            if(requestCode != FILECHOOSER_REQUESTCODE_LOLLIPOP || mUploadCallbackLollipop == null) {
-                super.onActivityResult(requestCode, resultCode, intent);
-                return;
-            }
-            mUploadCallbackLollipop.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent));
-            mUploadCallbackLollipop = null;
+        LOG.d(LOG_TAG, "onActivityResult");
+        // If RequestCode or Callback is Invalid
+        if(requestCode != FILECHOOSER_REQUESTCODE_LOLLIPOP || mUploadCallbackLollipop == null) {
+            super.onActivityResult(requestCode, resultCode, intent);
+            return;
         }
-        // For Android < 5.0
-        else {
-            LOG.d(LOG_TAG, "onActivityResult (For Android < 5.0)");
-            // If RequestCode or Callback is Invalid
-            if(requestCode != FILECHOOSER_REQUESTCODE || mUploadCallback == null) {
-                super.onActivityResult(requestCode, resultCode, intent);
-                return;
-            }
-
-            if (null == mUploadCallback) return;
-            Uri result = intent == null || resultCode != cordova.getActivity().RESULT_OK ? null : intent.getData();
-
-            mUploadCallback.onReceiveValue(result);
-            mUploadCallback = null;
-        }
+        mUploadCallbackLollipop.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent));
+        mUploadCallbackLollipop = null;
     }
 
     /**
@@ -1379,7 +1368,7 @@ public class InAppBrowser extends CordovaPlugin {
          * New (added in API 21)
          * For Android 5.0 and above.
          *
-         * @param webView
+         * @param view
          * @param request
          */
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -1433,16 +1422,10 @@ public class InAppBrowser extends CordovaPlugin {
             super.onPageFinished(view, url);
 
             // Set the namespace for postMessage()
-            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                injectDeferredObject("window.webkit={messageHandlers:{cordova_iab:cordova_iab}}", null);
-            }
+            injectDeferredObject("window.webkit={messageHandlers:{cordova_iab:cordova_iab}}", null);
 
             // CB-10395 InAppBrowser's WebView not storing cookies reliable to local device storage
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                CookieManager.getInstance().flush();
-            } else {
-                CookieSyncManager.getInstance().sync();
-            }
+            CookieManager.getInstance().flush();
 
             // https://issues.apache.org/jira/browse/CB-11248
             view.clearFocus();

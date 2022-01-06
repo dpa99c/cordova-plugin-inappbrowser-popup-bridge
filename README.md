@@ -18,12 +18,18 @@ iOS:
 - This means the main Cordova app Webview will also use WKWebView on iOS 9+.
     
 # Supported platform versions
-- This plugin officially supports iOS 9.0+ and Android 4.4+
-    - These are the versions supported by PopupBridge
-- However, this plugin will compile on iOS 8.0+ and Android 4.1+ 
-    - When running on earlier versions on which PopupBridge is not supported, it is the responsibility of the app which uses this plugin how it should behave.
-    - For example, fall back to launching the system browser instead of in-app browser. This means the user is taken out of the original app to the default browser app, but at least can fulfill their PayPal payment before manually navigating back to the original app.
+The following supported platform versions are based on the versions suppored by the Braintree PopupBridge libraries.
+
+## Android
+- Requires `cordova-android@10+`
+- Requires Gradle v7.1.1 or above
+- Supports Android 5.0 / API 21 and above
+- Since v5, requires the Cordova activity to run as `singleTask`
+    - Add `<preference name="AndroidLaunchMode" value="singleTask" />` to `<platform name="android">` in `config.xml`
+
+## iOS
+- Requires `cordova-ios@6+`
+- Supports iOS 9.0+
     
 # Example app
-
 [cordova-plugin-inappbrowser-popup-bridge-test](https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge-test) contains a Cordova project which builds a test app for Android and iOS to illustrate usage of this plugin.

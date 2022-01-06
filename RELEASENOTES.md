@@ -1,4 +1,12 @@
 # Release Notes
+
+### 5.0.0
+(Android) BREAKING: Update from `popup-bridge-android@1` to `popup-bridge-android@4`.
+- Fixes PopupBridge functionality when default browser is changed from Chrome to a 3rd party browser (e.g. Firefox)
+- Requires the Cordova activity to run as `singleTask`
+    - Add `<preference name="AndroidLaunchMode" value="singleTask" />` to `<platform name="android">` in `config.xml` 
+
+
 ### 4.1.4 (Aug 06, 2021)
 (Android) Crashfix: add custom PopupBridge class from popup-bridge-android containing crashfix
 * Patched from [this v4 commit](https://github.com/braintree/popup-bridge-android/commit/4bff178bca04d0e56d8f6a5f277b07eb1a72f51e) 
