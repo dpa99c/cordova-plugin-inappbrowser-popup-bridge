@@ -378,12 +378,23 @@ public class InAppBrowser extends CordovaPlugin {
         if (shouldPauseInAppBrowser) {
             inAppWebView.onResume();
         }
-        popupBridgeClient.deliverPopupBridgeResult((FragmentActivity)cordova.getActivity());
+        try{
+            if(popupBridgeClient == null){
+                createPopupBridgeClient();
+            }
+            popupBridgeClient.deliverPopupBridgeResult(cordova.getActivity());
+        }catch (Exception e){
+            LOG.e(LOG_TAG, "Failed to deliver PopupBridge result: "+e.getMessage());
+        }
     }
 
     @Override
     public void onNewIntent(Intent intent) {
-        cordova.getActivity().setIntent(intent);
+        try{
+            cordova.getActivity().setIntent(intent);
+        }catch (Exception e){
+            LOG.e(LOG_TAG, "Failed to set intent: "+e.getMessage());
+        }
     }
 
     /**
@@ -550,7 +561,11 @@ public class InAppBrowser extends CordovaPlugin {
                     // NB: wait for about:blank before dismissing
                     public void onPageFinished(WebView view, String url) {
                         if (dialog != null && !cordova.getActivity().isFinishing()) {
-                            dialog.dismiss();
+                            try {
+                                dialog.dismiss();
+                            }catch (Exception e){
+                                Log.e(LOG_TAG, "Failed to dismiss dialog: " + e.getMessage());
+                            }
                             dialog = null;
                         }
 
@@ -808,7 +823,11 @@ public class InAppBrowser extends CordovaPlugin {
 
                 // CB-6702 InAppBrowser hangs when opening more than one instance
                 if (dialog != null) {
-                    dialog.dismiss();
+                    try {
+                        dialog.dismiss();
+                    }catch (Exception e){
+                        Log.e(LOG_TAG, "Failed to dismiss dialog: " + e.getMessage());
+                    }
                 };
 
                 // Let's create the main dialog
@@ -947,17 +966,7 @@ public class InAppBrowser extends CordovaPlugin {
                 // WebView
                 inAppWebView = new WebView(cordova.getActivity());
                 inAppWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-                try{
-
-                    String urlScheme = cordova.getActivity().getApplicationContext().getPackageName() + ".popupbridge";
-                    popupBridgeClient = new PopupBridgeClient(cordova.getActivity(), inAppWebView, urlScheme);
-
-                    // register error listener
-                    popupBridgeClient.setErrorListener(error -> {
-                        Log.e("PopupBridgeActivity", error.getMessage());
-                    });
-
-                }catch (Exception e){} //swallow exception
+                createPopupBridgeClient();
                 inAppWebView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 inAppWebView.setId(Integer.valueOf(6));
                 // File Chooser Implemented ChromeClient
@@ -1107,6 +1116,20 @@ public class InAppBrowser extends CordovaPlugin {
         };
         this.cordova.getActivity().runOnUiThread(runnable);
         return "";
+    }
+
+    private void createPopupBridgeClient(){
+        try{
+
+            String urlScheme = cordova.getActivity().getApplicationContext().getPackageName() + ".popupbridge";
+            popupBridgeClient = new PopupBridgeClient(cordova.getActivity(), inAppWebView, urlScheme);
+
+            // register error listener
+            popupBridgeClient.setErrorListener(error -> {
+                Log.e("PopupBridgeActivity", error.getMessage());
+            });
+
+        }catch (Exception e){} //swallow exception
     }
 
     /**
