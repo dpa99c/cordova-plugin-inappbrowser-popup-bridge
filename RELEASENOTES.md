@@ -1,5 +1,9 @@
 # Release Notes
 
+### 5.0.1
+(Android) bugfix: On resuming from background, create popupBridgeClient if it's not already created.
+- Add defensive coding to catch unhandled exceptions.
+
 ### 5.0.0
 (Android) BREAKING: Update from `popup-bridge-android@1` to `popup-bridge-android@4`.
 - Fixes PopupBridge functionality when default browser is changed from Chrome to a 3rd party browser (e.g. Firefox)
