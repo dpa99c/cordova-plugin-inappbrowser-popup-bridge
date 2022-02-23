@@ -382,7 +382,7 @@ public class InAppBrowser extends CordovaPlugin {
             if(popupBridgeClient == null){
                 createPopupBridgeClient();
             }
-            popupBridgeClient.deliverPopupBridgeResult(cordova.getActivity());
+            popupBridgeClient.deliverPopupBridgeResult((FragmentActivity) cordova.getActivity());
         }catch (Exception e){
             LOG.e(LOG_TAG, "Failed to deliver PopupBridge result: "+e.getMessage());
         }
@@ -1122,7 +1122,7 @@ public class InAppBrowser extends CordovaPlugin {
         try{
 
             String urlScheme = cordova.getActivity().getApplicationContext().getPackageName() + ".popupbridge";
-            popupBridgeClient = new PopupBridgeClient(cordova.getActivity(), inAppWebView, urlScheme);
+            popupBridgeClient = new PopupBridgeClient((FragmentActivity) cordova.getActivity(), inAppWebView, urlScheme);
 
             // register error listener
             popupBridgeClient.setErrorListener(error -> {
