@@ -1,5 +1,9 @@
 # Release Notes
 
+### 5.0.2
+* (android) bugfix: Add missing FragmentActivity casts.
+	* Resolves [#12](https://github.com/dpa99c/cordova-plugin-inappbrowser-popup-bridge/issues/12)
+
 ### 5.0.1
 (Android) bugfix: On resuming from background, create popupBridgeClient if it's not already created.
 - Add defensive coding to catch unhandled exceptions.
